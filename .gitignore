@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual env
+.venv/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Streamlit
+.streamlit/
+
+# Exports
+exports/alerts/*.json
+exports/reports/*.html
+exports/reports/*.pdf
+
+# DB (we will add later)
+*.db
