@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pandas as pd
 
-from core.models import Asset, Vulnerability, Control
-from core.storage import init_db, add_asset, add_vulnerability, add_control, list_assets
-
+from core.models import Asset, Vulnerability, Control, Alert
+from core.storage import init_db, add_asset, add_vulnerability, add_control, list_assets, save_alert, list_vulnerabilities, get_asset
+from core.scoring import calculate_risk
 
 def seed_assets() -> None:
     df = pd.read_csv(Path("data") / "seed_assets.csv")
@@ -52,11 +52,50 @@ def seed_controls() -> None:
         add_control(c)
 
 
+def generate_alerts_from_vulns(limit: int = 200) -> None:
+    vulns = list_vulnerabilities()
+    count = 0
+
+    for v in vulns:
+        asset = get_asset(v.asset_id)
+        if not asset:
+            continue
+
+        rr = calculate_risk(
+            cvss=v.cvss,
+            criticality=asset.criticality,
+            internet_exposed=asset.internet_exposed,
+            known_exploited=v.known_exploited,
+        )
+
+        title = f"{rr.severity}: {v.cve} on {asset.name}"
+        evidence = (
+            f"CVSS={v.cvss} | criticality={asset.criticality} | "
+            f"internet_exposed={asset.internet_exposed} | known_exploited={v.known_exploited} | "
+            f"vuln_title={v.title}"
+        )
+
+        save_alert(
+            Alert(
+                severity=rr.severity,
+                title=title,
+                asset_id=asset.id,
+                cve=v.cve,
+                risk_score=rr.risk_score,
+                evidence=evidence,
+            )
+        )
+
+        count += 1
+        if count >= limit:
+            break
+
 def run_seed() -> None:
     init_db()
     seed_assets()
     seed_controls()
     seed_vulns()
+    generate_alerts_from_vulns()
 
 
 if __name__ == "__main__":
