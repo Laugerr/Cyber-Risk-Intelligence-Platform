@@ -289,3 +289,19 @@ def export_alerts_json(out_dir: Path = Path("exports") / "alerts") -> Path:
 
     out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return out_path
+
+
+def reset_db() -> None:
+    """Dangerous: wipes all tables. Useful for demos/dev."""
+    with get_conn() as conn:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM alerts")
+        cur.execute("DELETE FROM vulnerabilities")
+        cur.execute("DELETE FROM controls")
+        cur.execute("DELETE FROM assets")
+        conn.commit()
+
+
+def asset_name_to_id_map() -> dict[str, int]:
+    assets = list_assets()
+    return {a.name: a.id for a in assets if a.id is not None}
