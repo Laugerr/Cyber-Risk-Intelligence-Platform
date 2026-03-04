@@ -71,9 +71,23 @@ risk_reduction_value, rosi = calculate_rosi(
     effectiveness_pct=control.effectiveness_pct,
 )
 
+st.subheader("📉 ALE Impact (Before vs After)")
+
+ale_after = max(ale - risk_reduction_value, 0)
+
+st.metric("ALE After (€)", f"{ale_after:,.2f}")
+
+chart_df = pd.DataFrame(
+    {"EUR": [ale, ale_after]},
+    index=["ALE Before", "ALE After (estimated)"]
+)
+
+st.bar_chart(chart_df, use_container_width=True)
+
 c3, c4 = st.columns(2)
 c3.metric("Estimated Risk Reduction Value (€)", f"{risk_reduction_value:,.2f}")
 c4.metric("ROSI", rosi)
+
 
 st.divider()
 

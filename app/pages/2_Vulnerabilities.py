@@ -128,6 +128,11 @@ else:
 
     df = pd.DataFrame(rows)
 
+    st.subheader("📊 Vulnerability Risk Breakdown")
+    sev_order = ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+    sev_counts = df["severity"].value_counts().reindex(sev_order).fillna(0).astype(int)
+    st.bar_chart(sev_counts, use_container_width=True)
+
     f1, f2, f3 = st.columns(3)
     asset_filter = f1.selectbox("Filter by Asset", ["All"] + sorted(df["asset_name"].unique().tolist()))
     severity_filter = f2.selectbox("Filter by Severity", ["All", "CRITICAL", "HIGH", "MEDIUM", "LOW"])
@@ -144,5 +149,15 @@ else:
         filtered = filtered[filtered["known_exploited"] == False]
 
     filtered = filtered.sort_values(by=["risk_score", "cvss"], ascending=False)
+
+    def highlight_severity(row):
+        sev = row["severity"]
+        if sev == "CRITICAL":
+            return ["background-color: rgba(255,0,0,0.12)"] * len(row)
+        if sev == "HIGH":
+            return ["background-color: rgba(255,165,0,0.12)"] * len(row)
+        if sev == "MEDIUM":
+            return ["background-color: rgba(255,255,0,0.10)"] * len(row)
+        return [""] * len(row)
 
     st.dataframe(filtered, use_container_width=True)
