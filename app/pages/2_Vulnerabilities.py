@@ -95,12 +95,38 @@ with st.expander("Search and import CVEs into an asset", expanded=True):
             key="nvd_view_id",
         )
 
+        def cvss_to_severity(cvss: float | None) -> str:
+            if cvss is None:
+                return "⚪ N/A"
+            if cvss >= 9.0:
+                return "🔴 CRITICAL"
+            if cvss >= 7.0:
+                return "🟠 HIGH"
+            if cvss >= 4.0:
+                return "🟡 MEDIUM"
+            return "🟢 LOW"
+
+
+        def cvss_to_progress(cvss: float | None) -> float:
+            if cvss is None:
+                return 0.0
+            return max(0.0, min(float(cvss) / 10.0, 1.0))
+
         details = get_cve_by_id(view_id, api_key)
 
         if details:
             st.markdown(f"### {details.cve_id}")
             st.write(details.description or "No description.")
-            st.write(f"**CVSS:** {details.cvss if details.cvss is not None else 'N/A'}")
+
+            sev_label = cvss_to_severity(details.cvss)
+            cvss_val = details.cvss
+
+            c1, c2 = st.columns([1, 2])
+            c1.metric("Severity", sev_label)
+            c2.metric("CVSS", f"{cvss_val:.1f}/10" if cvss_val is not None else "N/A")
+
+            st.progress(cvss_to_progress(cvss_val))
+            
             st.write(f"**Published:** {details.published or 'N/A'}")
             st.write(f"**Last Modified:** {details.last_modified or 'N/A'}")
             st.markdown(f"[Open in NVD]({details.url})")
