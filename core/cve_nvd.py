@@ -128,3 +128,34 @@ def get_cve_by_id(cve_id: str, api_key: Optional[str]) -> Optional[NvdCveItem]:
         last_modified=cve.get("lastModified"),
         url=f"https://nvd.nist.gov/vuln/detail/{cve_id}",
     )
+
+def get_cve_by_id(cve_id: str, api_key: Optional[str]) -> Optional[NvdCveItem]:
+    cve_id = (cve_id or "").strip().upper()
+    if not cve_id.startswith("CVE-"):
+        return None
+
+    params = {"cveId": cve_id}
+    headers = {"Accept": "application/json"}
+    if api_key:
+        headers["apiKey"] = api_key
+
+    r = requests.get(NVD_BASE_URL, params=params, headers=headers, timeout=25)
+    r.raise_for_status()
+    data = r.json()
+
+    vulns = data.get("vulnerabilities", []) or []
+    if not vulns:
+        return None
+
+    cve = (vulns[0] or {}).get("cve", {}) or {}
+    desc = _pick_english_description(cve)
+    cvss = _extract_cvss_base_score(cve)
+
+    return NvdCveItem(
+        cve_id=cve_id,
+        description=desc,
+        cvss=cvss,
+        published=cve.get("published"),
+        last_modified=cve.get("lastModified"),
+        url=f"https://nvd.nist.gov/vuln/detail/{cve_id}",
+    )

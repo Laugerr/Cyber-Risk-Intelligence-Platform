@@ -8,7 +8,7 @@ import streamlit as st
 import pandas as pd
 
 from core.models import Vulnerability
-from core.cve_nvd import search_cves
+from core.cve_nvd import search_cves, get_cve_by_id
 from core.storage import (
     init_db,
     list_assets,
@@ -82,6 +82,28 @@ with st.expander("Search and import CVEs into an asset", expanded=True):
             ]
         )
         st.dataframe(df_nvd, use_container_width=True)
+
+        # -------------------------
+        # CVE DETAILS VIEWER (NO NESTED EXPANDER)
+        # -------------------------
+        st.divider()
+        st.subheader("🔎 View CVE Details")
+
+        view_id = st.selectbox(
+            "Select a CVE to view",
+            options=[r.cve_id for r in results],
+            key="nvd_view_id",
+        )
+
+        details = get_cve_by_id(view_id, api_key)
+
+        if details:
+            st.markdown(f"### {details.cve_id}")
+            st.write(details.description or "No description.")
+            st.write(f"**CVSS:** {details.cvss if details.cvss is not None else 'N/A'}")
+            st.write(f"**Published:** {details.published or 'N/A'}")
+            st.write(f"**Last Modified:** {details.last_modified or 'N/A'}")
+            st.markdown(f"[Open in NVD]({details.url})")
 
         st.divider()
         st.subheader("📥 Import Settings")
