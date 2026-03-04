@@ -2,8 +2,7 @@
 
 ---
 ## 🌐 Live Demo
-🚀 https://cyber-risk-intelligence-platform-mlky9pki99u9yoytdalhdp.streamlit.app/
-[![Streamlit App](https://img.shields.io/badge/Streamlit-Live%20App-FF4B4B?logo=streamlit&logoColor=white)](https://cyber-risk-intelligence-platform-mlky9pki99u9yoytdalhdp.streamlit.app/)
+🚀 [![Streamlit App](https://img.shields.io/badge/Streamlit-Live%20App-FF4B4B?logo=streamlit&logoColor=white)](https://cyber-risk-intelligence-platform-mlky9pki99u9yoytdalhdp.streamlit.app/)
 ---
 
 Enterprise-style Cyber Risk Intelligence Platform built with **Python +
@@ -200,3 +199,7 @@ MSc Cybersecurity Management\
 Future Application Security Engineer / SOC Analyst
 
 ------------------------------------------------------------------------
+
+## 📜 License
+
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
