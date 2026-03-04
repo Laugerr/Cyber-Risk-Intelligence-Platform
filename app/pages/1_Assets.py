@@ -135,5 +135,5 @@ else:
 
     st.dataframe(
         filtered[["id", "name", "asset_type", "owner", "criticality", "internet_exposed", "created_at"]],
-        width="stretch",
+        use_container_width=True,
     )

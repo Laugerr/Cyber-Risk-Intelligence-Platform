@@ -19,7 +19,6 @@ from core.storage import (
 from core.scoring import calculate_risk
 from core.sample_data import generate_alerts_from_vulns
 
-
 st.set_page_config(page_title="CRISP • Vulnerabilities", layout="wide")
 init_db()
 
@@ -30,7 +29,7 @@ assets = list_assets()
 asset_map = {a.id: a for a in assets if a.id is not None}
 
 # -------------------------
-# Add Vulnerability Form
+# Add Vulnerability
 # -------------------------
 st.subheader("➕ Add Vulnerability")
 
@@ -72,7 +71,7 @@ else:
 st.divider()
 
 # -------------------------
-# Generate Alerts + Export
+# Alerts Actions
 # -------------------------
 st.subheader("🚨 Alerts Actions")
 c1, c2, c3 = st.columns(3)
@@ -91,7 +90,7 @@ c3.metric("Alerts in DB", alerts_count)
 st.divider()
 
 # -------------------------
-# Vulnerabilities Table + Filters
+# Vulnerabilities Table
 # -------------------------
 st.subheader("📋 Vulnerability List")
 
@@ -104,27 +103,25 @@ else:
         a = asset_map.get(v.asset_id)
         if not a:
             continue
+
         rr = calculate_risk(
             cvss=v.cvss,
             criticality=a.criticality,
             internet_exposed=a.internet_exposed,
             known_exploited=v.known_exploited,
         )
+
         rows.append(
             {
-                "id": v.id,
-                "asset_id": v.asset_id,
+                "severity": rr.severity,
+                "risk_score": rr.risk_score,
                 "asset_name": a.name,
-                "asset_type": a.asset_type,
-                "owner": a.owner,
-                "criticality": a.criticality,
-                "internet_exposed": a.internet_exposed,
                 "cve": v.cve,
-                "title": v.title,
                 "cvss": v.cvss,
                 "known_exploited": v.known_exploited,
-                "risk_score": rr.risk_score,
-                "severity": rr.severity,
+                "internet_exposed": a.internet_exposed,
+                "criticality": a.criticality,
+                "title": v.title,
                 "detected_at": str(v.detected_at),
             }
         )
@@ -146,23 +143,6 @@ else:
     elif exploited_filter == "No":
         filtered = filtered[filtered["known_exploited"] == False]
 
-    # Sort by highest risk first
     filtered = filtered.sort_values(by=["risk_score", "cvss"], ascending=False)
 
-    st.dataframe(
-        filtered[
-            [
-                "severity",
-                "risk_score",
-                "asset_name",
-                "cve",
-                "cvss",
-                "known_exploited",
-                "internet_exposed",
-                "criticality",
-                "title",
-                "detected_at",
-            ]
-        ],
-        use_container_width=True,
-    )
+    st.dataframe(filtered, use_container_width=True)
