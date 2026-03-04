@@ -45,6 +45,6 @@ if alerts:
     top_assets["asset_name"] = top_assets["asset_id"].map(asset_map)
 
     st.subheader("🔥 Top 5 Risky Assets (by max risk score)")
-    st.dataframe(top_assets[["asset_name", "risk_score"]], width="stretch")
+    st.dataframe(top_assets[["asset_name", "risk_score"]], use_container_width=True)
 else:
     st.info("No alerts found yet. Run: python3 -m core.sample_data")

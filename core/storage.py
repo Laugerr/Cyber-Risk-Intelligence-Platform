@@ -187,6 +187,21 @@ def list_vulnerabilities(asset_id: Optional[int] = None) -> List[Vulnerability]:
             )
         return out
 
+def get_asset_by_name(name: str) -> Optional[Asset]:
+    with get_conn() as conn:
+        r = conn.execute("SELECT * FROM assets WHERE name = ?", (name,)).fetchone()
+        if not r:
+            return None
+        return Asset(
+            id=r["id"],
+            name=r["name"],
+            asset_type=r["asset_type"],
+            owner=r["owner"],
+            criticality=r["criticality"],
+            internet_exposed=bool(r["internet_exposed"]),
+            created_at=datetime.fromisoformat(r["created_at"]),
+        )
+
 
 # ---------------------------
 # Controls
