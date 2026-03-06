@@ -92,6 +92,61 @@ top_assets_chart = top_assets_10[["asset_name", "risk_score"]].set_index("asset_
 st.subheader("🔥 Top 10 Risky Assets")
 st.bar_chart(top_assets_chart, use_container_width=True)
 
+st.subheader("📈 Risk Trend Dashboard")
+
+# Convert created_at to datetime
+df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce")
+df["date"] = df["created_at"].dt.date
+
+# Risk score trend by day
+daily_risk = (
+    df.groupby("date")["risk_score"]
+    .sum()
+    .reset_index()
+    .sort_values("date")
+)
+
+st.markdown("### Total Risk Score Over Time")
+if not daily_risk.empty:
+    risk_chart = daily_risk.set_index("date")[["risk_score"]]
+    st.line_chart(risk_chart, use_container_width=True)
+else:
+    st.info("Not enough data to display risk trend.")
+
+# Alert count trend by day
+daily_alerts = (
+    df.groupby("date")
+    .size()
+    .reset_index(name="alert_count")
+    .sort_values("date")
+)
+
+st.markdown("### Alert Volume Over Time")
+if not daily_alerts.empty:
+    alerts_chart = daily_alerts.set_index("date")[["alert_count"]]
+    st.bar_chart(alerts_chart, use_container_width=True)
+else:
+    st.info("Not enough data to display alert trend.")
+
+st.markdown("### Severity Trend Over Time")
+
+severity_trend = (
+    df.groupby(["date", "severity"])
+    .size()
+    .reset_index(name="count")
+)
+
+if not severity_trend.empty:
+    sev_pivot = severity_trend.pivot(index="date", columns="severity", values="count").fillna(0)
+
+    # keep severity order if columns exist
+    severity_order = ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+    sev_pivot = sev_pivot[[c for c in severity_order if c in sev_pivot.columns]]
+
+    st.line_chart(sev_pivot, use_container_width=True)
+else:
+    st.info("Not enough data to display severity trend.")
+
 # Risk score distribution (bucket counts)
 st.subheader("📈 Risk Score Distribution")
 bins = [0, 5, 9, 12, 100]
