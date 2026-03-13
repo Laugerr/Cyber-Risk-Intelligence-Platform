@@ -8,6 +8,8 @@ import pandas as pd
 from core.models import Asset, Vulnerability, Control, Alert
 from core.storage import init_db, add_asset, add_vulnerability, add_control, list_assets, save_alert, list_vulnerabilities, get_asset
 from core.scoring import calculate_risk
+from datetime import datetime, timedelta
+import random
 
 def seed_assets() -> None:
     df = pd.read_csv(Path("data") / "seed_assets.csv")
@@ -52,7 +54,7 @@ def seed_controls() -> None:
         add_control(c)
 
 
-def generate_alerts_from_vulns(limit: int = 200) -> None:
+def generate_alerts_from_vulns(limit: int = 500) -> None:
     vulns = list_vulnerabilities()
     count = 0
 
@@ -72,7 +74,17 @@ def generate_alerts_from_vulns(limit: int = 200) -> None:
         evidence = (
             f"CVSS={v.cvss} | criticality={asset.criticality} | "
             f"internet_exposed={asset.internet_exposed} | known_exploited={v.known_exploited} | "
-            f"vuln_title={v.title}"
+            f"title={v.title}"
+        )
+
+        # Spread alerts across the last 21 days for trend visualization
+        days_ago = random.randint(0, 20)
+        hours_ago = random.randint(0, 23)
+        minutes_ago = random.randint(0, 59)
+        simulated_created_at = datetime.utcnow() - timedelta(
+            days=days_ago,
+            hours=hours_ago,
+            minutes=minutes_ago,
         )
 
         save_alert(
@@ -83,6 +95,7 @@ def generate_alerts_from_vulns(limit: int = 200) -> None:
                 cve=v.cve,
                 risk_score=rr.risk_score,
                 evidence=evidence,
+                created_at=simulated_created_at,
             )
         )
 
