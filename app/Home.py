@@ -23,12 +23,12 @@ st.caption("Assets • Vulnerabilities • Risk Scoring • ROSI • SIEM-style 
 # -------------------------
 # KPIs (safe even if alerts is empty)
 # -------------------------
-sev_counts_kpi = pd.Series([a.severity for a in alerts]).value_counts()
+sev_counts_kpi = df["severity"].value_counts()
 
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Assets", len(assets))
 c2.metric("Vulnerabilities", len(vulns))
-c3.metric("Alerts", len(alerts))
+c3.metric("Alerts", len(df))
 c4.metric("Critical Alerts", int(sev_counts_kpi.get("CRITICAL", 0)))
 
 st.divider()
@@ -44,6 +44,32 @@ if not alerts:
 # From here: alerts exist ✅
 # -------------------------
 df = pd.DataFrame([a.model_dump() for a in alerts])
+
+# -------------------------
+# Time Range Filter
+# -------------------------
+st.divider()
+st.subheader("🗓️ Time Filter")
+
+time_range = st.selectbox(
+    "Select dashboard time range",
+    ["Last 7 Days", "Last 30 Days", "All Time"],
+    index=1,
+)
+
+df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce")
+
+if time_range == "Last 7 Days":
+    cutoff = pd.Timestamp.now() - pd.Timedelta(days=7)
+    df = df[df["created_at"] >= cutoff]
+elif time_range == "Last 30 Days":
+    cutoff = pd.Timestamp.now() - pd.Timedelta(days=30)
+    df = df[df["created_at"] >= cutoff]
+
+if df.empty:
+    st.warning(f"No alerts found for selected range: {time_range}")
+    st.stop()
+
 
 # Top risky assets table (Top 5)
 top_assets_5 = (
