@@ -8,7 +8,8 @@ from typing import List, Optional, Tuple
 
 from core.models import Asset, Vulnerability, Control, Alert
 
-DB_PATH = Path("data") / "crisp.db"
+ROOT_DIR = Path(__file__).resolve().parent.parent
+DB_PATH = ROOT_DIR / "data" / "crisp.db"
 
 
 def get_conn() -> sqlite3.Connection:
@@ -265,6 +266,12 @@ def save_alert(a: Alert) -> int:
             ),
         )
         return int(cur.lastrowid)
+
+
+def clear_alerts() -> None:
+    with get_conn() as conn:
+        conn.execute("DELETE FROM alerts")
+        conn.commit()
 
 
 def list_alerts(limit: int = 200) -> List[Alert]:

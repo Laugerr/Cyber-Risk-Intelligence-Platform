@@ -1,18 +1,32 @@
 from __future__ import annotations
 
 import json
+import random
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
 
 from core.models import Asset, Vulnerability, Control, Alert
-from core.storage import init_db, add_asset, add_vulnerability, add_control, list_assets, save_alert, list_vulnerabilities, get_asset
+from core.storage import (
+    add_asset,
+    add_control,
+    add_vulnerability,
+    clear_alerts,
+    get_asset,
+    init_db,
+    list_assets,
+    list_vulnerabilities,
+    reset_db,
+    save_alert,
+)
 from core.scoring import calculate_risk
-from datetime import datetime, timedelta
-import random
+
+
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 def seed_assets() -> None:
-    df = pd.read_csv(Path("data") / "seed_assets.csv")
+    df = pd.read_csv(DATA_DIR / "seed_assets.csv")
     for _, row in df.iterrows():
         asset = Asset(
             name=str(row["name"]),
@@ -26,7 +40,7 @@ def seed_assets() -> None:
 
 def seed_vulns() -> None:
     assets = {a.name: a for a in list_assets()}
-    data = json.loads((Path("data") / "seed_vulns.json").read_text(encoding="utf-8"))
+    data = json.loads((DATA_DIR / "seed_vulns.json").read_text(encoding="utf-8"))
 
     for item in data:
         asset = assets.get(item["asset_name"])
@@ -54,7 +68,10 @@ def seed_controls() -> None:
         add_control(c)
 
 
-def generate_alerts_from_vulns(limit: int = 500) -> None:
+def generate_alerts_from_vulns(limit: int = 500, replace_existing: bool = True) -> None:
+    if replace_existing:
+        clear_alerts()
+
     vulns = list_vulnerabilities()
     count = 0
 
@@ -105,10 +122,11 @@ def generate_alerts_from_vulns(limit: int = 500) -> None:
 
 def run_seed() -> None:
     init_db()
+    reset_db()
     seed_assets()
     seed_controls()
     seed_vulns()
-    generate_alerts_from_vulns()
+    generate_alerts_from_vulns(replace_existing=True)
 
 
 if __name__ == "__main__":

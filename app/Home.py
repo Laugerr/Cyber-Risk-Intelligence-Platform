@@ -16,6 +16,7 @@ assets = list_assets()
 vulns = list_vulnerabilities()
 controls = list_controls()
 alerts = list_alerts(limit=500)
+df = pd.DataFrame([a.model_dump() for a in alerts]) if alerts else pd.DataFrame()
 
 st.title("🛡️ Cyber Risk Intelligence Platform (CRISP)")
 st.caption("Assets • Vulnerabilities • Risk Scoring • ROSI • SIEM-style Alerts • Reports")
@@ -23,7 +24,7 @@ st.caption("Assets • Vulnerabilities • Risk Scoring • ROSI • SIEM-style 
 # -------------------------
 # KPIs (safe even if alerts is empty)
 # -------------------------
-sev_counts_kpi = df["severity"].value_counts()
+sev_counts_kpi = df["severity"].value_counts() if not df.empty else pd.Series(dtype="int64")
 
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Assets", len(assets))
@@ -43,7 +44,6 @@ if not alerts:
 # -------------------------
 # From here: alerts exist ✅
 # -------------------------
-df = pd.DataFrame([a.model_dump() for a in alerts])
 
 # -------------------------
 # Time Range Filter
