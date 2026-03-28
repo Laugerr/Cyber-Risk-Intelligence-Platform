@@ -46,6 +46,7 @@ def init_db() -> None:
               title TEXT NOT NULL,
               cvss REAL NOT NULL,
               known_exploited INTEGER NOT NULL,
+              epss_score REAL,
               detected_at TEXT NOT NULL,
               FOREIGN KEY(asset_id) REFERENCES assets(id)
             )
@@ -80,6 +81,12 @@ def init_db() -> None:
             )
             """
         )
+
+        vuln_columns = {row["name"] for row in cur.execute("PRAGMA table_info(vulnerabilities)").fetchall()}
+        if "epss_score" not in vuln_columns:
+            cur.execute("ALTER TABLE vulnerabilities ADD COLUMN epss_score REAL")
+
+        conn.commit()
 
 
 # ---------------------------
@@ -148,8 +155,8 @@ def add_vulnerability(v: Vulnerability) -> int:
         cur = conn.cursor()
         cur.execute(
             """
-            INSERT INTO vulnerabilities (asset_id, cve, title, cvss, known_exploited, detected_at)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO vulnerabilities (asset_id, cve, title, cvss, known_exploited, epss_score, detected_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 v.asset_id,
@@ -157,6 +164,7 @@ def add_vulnerability(v: Vulnerability) -> int:
                 v.title,
                 float(v.cvss),
                 1 if v.known_exploited else 0,
+                None if v.epss_score is None else float(v.epss_score),
                 v.detected_at.isoformat(),
             ),
         )
@@ -183,6 +191,7 @@ def list_vulnerabilities(asset_id: Optional[int] = None) -> List[Vulnerability]:
                     title=r["title"],
                     cvss=float(r["cvss"]),
                     known_exploited=bool(r["known_exploited"]),
+                    epss_score=None if r["epss_score"] is None else float(r["epss_score"]),
                     detected_at=datetime.fromisoformat(r["detected_at"]),
                 )
             )
@@ -209,6 +218,32 @@ def mark_vulnerabilities_known_exploited_from_cves(cve_ids: set[str]) -> int:
         )
         conn.commit()
         return int(cur.rowcount)
+
+
+def update_vulnerability_epss_scores(score_map: dict[str, float]) -> int:
+    normalized = {
+        cve.strip().upper(): float(score)
+        for cve, score in score_map.items()
+        if cve and str(cve).strip() and score is not None
+    }
+    if not normalized:
+        return 0
+
+    with get_conn() as conn:
+        cur = conn.cursor()
+        updated = 0
+        for cve_id, score in normalized.items():
+            cur.execute(
+                """
+                UPDATE vulnerabilities
+                SET epss_score = ?
+                WHERE UPPER(TRIM(cve)) = ?
+                """,
+                (score, cve_id),
+            )
+            updated += int(cur.rowcount)
+        conn.commit()
+        return updated
 
 def get_asset_by_name(name: str) -> Optional[Asset]:
     with get_conn() as conn:

@@ -25,6 +25,7 @@ class Vulnerability(BaseModel):
     title: str
     cvss: float = Field(ge=0, le=10)
     known_exploited: bool = False
+    epss_score: Optional[float] = Field(default=None, ge=0, le=1)
     detected_at: datetime = Field(default_factory=datetime.utcnow)
 
 

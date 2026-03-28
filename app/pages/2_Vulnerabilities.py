@@ -11,6 +11,7 @@ import streamlit as st
 
 from core.cisa_kev import fetch_kev_cve_set, is_cve_in_kev
 from core.cve_nvd import get_cve_by_id, search_cves
+from core.epss import fetch_epss_scores
 from core.models import Vulnerability
 from core.sample_data import generate_alerts_from_vulns
 from core.scoring import calculate_risk
@@ -22,6 +23,7 @@ from core.storage import (
     list_assets,
     list_vulnerabilities,
     mark_vulnerabilities_known_exploited_from_cves,
+    update_vulnerability_epss_scores,
 )
 
 
@@ -567,6 +569,7 @@ def render_vuln_table(df: pd.DataFrame) -> None:
         "LOW": "🟢 Low",
     }
     table_df["severity"] = table_df["severity"].map(severity_label).fillna(table_df["severity"])
+    table_df["epss_score"] = pd.to_numeric(table_df["epss_score"], errors="coerce")
     table_df["status"] = table_df["status"]
     table_df["source"] = table_df["source"]
     table_df["known_exploited_display"] = table_df["known_exploited"].map({True: "Yes", False: "No"})
@@ -582,6 +585,7 @@ def render_vuln_table(df: pd.DataFrame) -> None:
                 "asset_name",
                 "severity",
                 "cvss",
+                "epss_score",
                 "known_exploited_display",
                 "kev_display",
                 "status",
@@ -596,6 +600,7 @@ def render_vuln_table(df: pd.DataFrame) -> None:
                 "asset_name": "Asset",
                 "severity": "Severity",
                 "cvss": "CVSS Score",
+                "epss_score": "EPSS Score",
                 "known_exploited_display": "Known Exploited",
                 "kev_display": "KEV",
                 "status": "Status",
@@ -608,6 +613,7 @@ def render_vuln_table(df: pd.DataFrame) -> None:
         hide_index=True,
         column_config={
             "CVSS Score": st.column_config.NumberColumn("CVSS Score", format="%.1f", width="small"),
+            "EPSS Score": st.column_config.NumberColumn("EPSS Score", format="%.3f", width="small"),
             "View Details": st.column_config.LinkColumn("View Details", display_text="Open", width="small"),
         },
     )
@@ -635,6 +641,12 @@ def cached_kev_cves() -> set[str]:
     return fetch_kev_cve_set()
 
 
+@st.cache_data(ttl=3600, show_spinner=False)
+def cached_epss_scores(cve_ids: tuple[str, ...]) -> dict[str, float]:
+    entries = fetch_epss_scores(cve_ids)
+    return {cve_id: entry.epss for cve_id, entry in entries.items()}
+
+
 if "nvd_results" not in st.session_state:
     st.session_state["nvd_results"] = []
 
@@ -642,6 +654,8 @@ if "nvd_results" not in st.session_state:
 kev_cves = cached_kev_cves()
 
 vulns = list_vulnerabilities()
+vuln_cves = tuple(sorted({v.cve.strip().upper() for v in vulns if getattr(v, "cve", "").strip()}))
+epss_scores = cached_epss_scores(vuln_cves) if vuln_cves else {}
 rows = []
 for v in vulns:
     a = asset_map.get(v.asset_id)
@@ -677,6 +691,7 @@ for v in vulns:
             "cvss": v.cvss,
             "known_exploited": effective_known_exploited,
             "kev": kev_flag,
+            "epss_score": epss_scores.get(v.cve.strip().upper(), v.epss_score),
             "criticality": a.criticality,
             "title": v.title,
             "detected_at": detected_at,
@@ -771,13 +786,20 @@ with filter_bar[5]:
 if not filtered.empty:
     filtered["detected_label"] = filtered["detected_at"].apply(time_ago)
 
-kev_sync_col1, kev_sync_col2 = st.columns([1, 3])
+kev_sync_col1, kev_sync_col2, kev_sync_col3 = st.columns([1, 1, 2])
 with kev_sync_col1:
     if st.button("Sync CISA KEV", use_container_width=True):
         updated = mark_vulnerabilities_known_exploited_from_cves(kev_cves)
         st.success(f"KEV sync complete. Updated {updated} vulnerability record(s).")
 with kev_sync_col2:
-    st.caption(f"CISA KEV catalog loaded: {len(kev_cves)} exploited CVEs.")
+    if st.button("Sync EPSS Scores", use_container_width=True):
+        updated = update_vulnerability_epss_scores(epss_scores)
+        st.success(f"EPSS sync complete. Updated {updated} vulnerability record(s).")
+with kev_sync_col3:
+    st.caption(
+        f"CISA KEV catalog loaded: {len(kev_cves)} exploited CVEs. "
+        f"EPSS scores loaded: {len(epss_scores)} CVE(s)."
+    )
 
 controls_row = st.columns(2)
 with controls_row[0]:
