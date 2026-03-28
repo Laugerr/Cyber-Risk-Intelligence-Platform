@@ -9,6 +9,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
+from core.cisa_kev import fetch_kev_cve_set, is_cve_in_kev
 from core.cve_nvd import get_cve_by_id, search_cves
 from core.models import Vulnerability
 from core.sample_data import generate_alerts_from_vulns
@@ -20,6 +21,7 @@ from core.storage import (
     list_alerts,
     list_assets,
     list_vulnerabilities,
+    mark_vulnerabilities_known_exploited_from_cves,
 )
 
 
@@ -567,17 +569,35 @@ def render_vuln_table(df: pd.DataFrame) -> None:
     table_df["severity"] = table_df["severity"].map(severity_label).fillna(table_df["severity"])
     table_df["status"] = table_df["status"]
     table_df["source"] = table_df["source"]
+    table_df["known_exploited_display"] = table_df["known_exploited"].map({True: "Yes", False: "No"})
+    table_df["kev_display"] = table_df["kev"].map({True: "🚨 KEV", False: ""})
     table_df["detected"] = table_df["detected_label"]
     table_df["action"] = table_df["detail_url"]
 
     st.dataframe(
-        table_df[["cve", "title", "asset_name", "severity", "cvss", "status", "source", "detected", "action"]].rename(
+        table_df[
+            [
+                "cve",
+                "title",
+                "asset_name",
+                "severity",
+                "cvss",
+                "known_exploited_display",
+                "kev_display",
+                "status",
+                "source",
+                "detected",
+                "action",
+            ]
+        ].rename(
             columns={
                 "cve": "CVE ID",
                 "title": "Title",
                 "asset_name": "Asset",
                 "severity": "Severity",
                 "cvss": "CVSS Score",
+                "known_exploited_display": "Known Exploited",
+                "kev_display": "KEV",
                 "status": "Status",
                 "source": "Source",
                 "detected": "Detected",
@@ -610,9 +630,16 @@ def cached_search(q: str, key: str | None, limit: int):
     return search_cves(q, key, limit=limit)
 
 
+@st.cache_data(ttl=3600, show_spinner=False)
+def cached_kev_cves() -> set[str]:
+    return fetch_kev_cve_set()
+
+
 if "nvd_results" not in st.session_state:
     st.session_state["nvd_results"] = []
 
+
+kev_cves = cached_kev_cves()
 
 vulns = list_vulnerabilities()
 rows = []
@@ -621,17 +648,20 @@ for v in vulns:
     if not a:
         continue
 
+    kev_flag = is_cve_in_kev(v.cve, kev_cves)
+    effective_known_exploited = bool(v.known_exploited or kev_flag)
+
     rr = calculate_risk(
         cvss=v.cvss,
         criticality=a.criticality,
         internet_exposed=a.internet_exposed,
-        known_exploited=v.known_exploited,
+        known_exploited=effective_known_exploited,
     )
     detected_at = pd.to_datetime(v.detected_at, errors="coerce")
     status = derive_status(
         pd.Series(
             {
-                "known_exploited": v.known_exploited,
+                "known_exploited": effective_known_exploited,
                 "risk_score": rr.risk_score,
             }
         )
@@ -645,7 +675,8 @@ for v in vulns:
             "asset_name": a.name,
             "cve": v.cve,
             "cvss": v.cvss,
-            "known_exploited": v.known_exploited,
+            "known_exploited": effective_known_exploited,
+            "kev": kev_flag,
             "criticality": a.criticality,
             "title": v.title,
             "detected_at": detected_at,
@@ -739,6 +770,14 @@ with filter_bar[5]:
 
 if not filtered.empty:
     filtered["detected_label"] = filtered["detected_at"].apply(time_ago)
+
+kev_sync_col1, kev_sync_col2 = st.columns([1, 3])
+with kev_sync_col1:
+    if st.button("Sync CISA KEV", use_container_width=True):
+        updated = mark_vulnerabilities_known_exploited_from_cves(kev_cves)
+        st.success(f"KEV sync complete. Updated {updated} vulnerability record(s).")
+with kev_sync_col2:
+    st.caption(f"CISA KEV catalog loaded: {len(kev_cves)} exploited CVEs.")
 
 controls_row = st.columns(2)
 with controls_row[0]:

@@ -188,6 +188,28 @@ def list_vulnerabilities(asset_id: Optional[int] = None) -> List[Vulnerability]:
             )
         return out
 
+
+def mark_vulnerabilities_known_exploited_from_cves(cve_ids: set[str]) -> int:
+    normalized = sorted({c.strip().upper() for c in cve_ids if c and c.strip()})
+    if not normalized:
+        return 0
+
+    placeholders = ",".join("?" for _ in normalized)
+
+    with get_conn() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            f"""
+            UPDATE vulnerabilities
+            SET known_exploited = 1
+            WHERE UPPER(TRIM(cve)) IN ({placeholders})
+              AND known_exploited = 0
+            """,
+            normalized,
+        )
+        conn.commit()
+        return int(cur.rowcount)
+
 def get_asset_by_name(name: str) -> Optional[Asset]:
     with get_conn() as conn:
         r = conn.execute("SELECT * FROM assets WHERE name = ?", (name,)).fetchone()
