@@ -664,12 +664,15 @@ for v in vulns:
 
     kev_flag = is_cve_in_kev(v.cve, kev_cves)
     effective_known_exploited = bool(v.known_exploited or kev_flag)
+    effective_epss_score = epss_scores.get(v.cve.strip().upper(), v.epss_score)
 
     rr = calculate_risk(
         cvss=v.cvss,
         criticality=a.criticality,
         internet_exposed=a.internet_exposed,
         known_exploited=effective_known_exploited,
+        kev=kev_flag,
+        epss_score=effective_epss_score,
     )
     detected_at = pd.to_datetime(v.detected_at, errors="coerce")
     status = derive_status(
@@ -691,7 +694,7 @@ for v in vulns:
             "cvss": v.cvss,
             "known_exploited": effective_known_exploited,
             "kev": kev_flag,
-            "epss_score": epss_scores.get(v.cve.strip().upper(), v.epss_score),
+            "epss_score": effective_epss_score,
             "criticality": a.criticality,
             "title": v.title,
             "detected_at": detected_at,

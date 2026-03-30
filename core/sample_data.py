@@ -85,12 +85,14 @@ def generate_alerts_from_vulns(limit: int = 500, replace_existing: bool = True) 
             criticality=asset.criticality,
             internet_exposed=asset.internet_exposed,
             known_exploited=v.known_exploited,
+            epss_score=v.epss_score,
         )
 
         title = f"{rr.severity}: {v.cve} on {asset.name}"
         evidence = (
             f"CVSS={v.cvss} | criticality={asset.criticality} | "
             f"internet_exposed={asset.internet_exposed} | known_exploited={v.known_exploited} | "
+            f"epss_score={v.epss_score} | "
             f"title={v.title}"
         )
 
