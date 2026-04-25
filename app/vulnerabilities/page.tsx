@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Bug, Search } from "lucide-react";
+import { Plus, Trash2, Bug, Search, Flame, ShieldOff, BarChart2 } from "lucide-react";
 import type { Asset, Vulnerability } from "@/lib/types";
 import { calculateRisk } from "@/lib/scoring";
 import { toast } from "sonner";
@@ -103,6 +103,14 @@ export default function VulnerabilitiesPage() {
     !search || v.cve.toLowerCase().includes(search.toLowerCase()) || v.title.toLowerCase().includes(search.toLowerCase())
   );
 
+  const kevCount = vulns.filter((v) => v.known_exploited).length;
+  const criticalCount = vulns.filter((v) => {
+    const a = assetMap[v.asset_id];
+    const r = a ? calculateRisk(v.cvss, a.criticality, a.internet_exposed, v.known_exploited, false, v.epss_score) : null;
+    return r?.severity === "CRITICAL";
+  }).length;
+  const avgCvss = vulns.length > 0 ? vulns.reduce((s, v) => s + v.cvss, 0) / vulns.length : 0;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -119,7 +127,6 @@ export default function VulnerabilitiesPage() {
               <DialogTitle>New Vulnerability</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* NVD search */}
               <div className="space-y-1.5">
                 <Label>Search NVD (optional)</Label>
                 <div className="flex gap-2">
@@ -196,31 +203,43 @@ export default function VulnerabilitiesPage() {
         </Dialog>
       </div>
 
+      {/* Stats */}
+      {vulns.length > 0 && (
+        <div className="grid grid-cols-3 gap-4">
+          <StatCard label="KEV (Active Exploits)" value={kevCount} icon={<Flame className="w-4 h-4" />} highlight={kevCount > 0} />
+          <StatCard label="Critical Severity" value={criticalCount} icon={<ShieldOff className="w-4 h-4" />} highlight={criticalCount > 0} />
+          <StatCard label="Avg CVSS Score" value={avgCvss.toFixed(1)} icon={<BarChart2 className="w-4 h-4" />} highlight={avgCvss >= 7} />
+        </div>
+      )}
+
       {/* Search */}
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input className="pl-9" placeholder="Filter by CVE or title…" value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      <Card style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
         <CardContent className="p-0">
           {filtered.length === 0 ? (
-            <div className="py-16 text-center text-muted-foreground">
-              <Bug className="w-8 h-8 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">{search ? "No results." : "No vulnerabilities yet."}</p>
+            <div className="py-20 text-center text-muted-foreground">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 opacity-20" style={{ background: "oklch(0.62 0.20 32 / 15%)" }}>
+                <Bug className="w-6 h-6" />
+              </div>
+              <p className="text-sm font-medium">{search ? "No results matching your filter." : "No vulnerabilities yet."}</p>
+              <p className="text-xs mt-1">{search ? "Try a different keyword." : "Add a vulnerability or load demo data."}</p>
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border text-muted-foreground text-xs uppercase tracking-wider">
-                  <th className="text-left px-4 py-3">CVE</th>
-                  <th className="text-left px-4 py-3">Title</th>
-                  <th className="text-left px-4 py-3">Asset</th>
-                  <th className="text-left px-4 py-3">CVSS</th>
-                  <th className="text-left px-4 py-3">EPSS</th>
-                  <th className="text-left px-4 py-3">Risk Score</th>
-                  <th className="text-left px-4 py-3">Severity</th>
-                  <th className="px-4 py-3" />
+                <tr style={{ borderBottom: "1px solid oklch(1 0 0 / 8%)" }} className="text-muted-foreground text-xs uppercase tracking-wider">
+                  <th className="text-left px-5 py-3">CVE</th>
+                  <th className="text-left px-5 py-3">Title</th>
+                  <th className="text-left px-5 py-3">Asset</th>
+                  <th className="text-left px-5 py-3">CVSS</th>
+                  <th className="text-left px-5 py-3">EPSS</th>
+                  <th className="text-left px-5 py-3">Risk Score</th>
+                  <th className="text-left px-5 py-3">Severity</th>
+                  <th className="px-5 py-3" />
                 </tr>
               </thead>
               <tbody>
@@ -230,15 +249,24 @@ export default function VulnerabilitiesPage() {
                     ? calculateRisk(v.cvss, asset.criticality, asset.internet_exposed, v.known_exploited, false, v.epss_score)
                     : null;
                   return (
-                    <tr key={v.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition-colors">
-                      <td className="px-4 py-3 font-mono text-primary text-xs">{v.cve}</td>
-                      <td className="px-4 py-3 max-w-xs truncate text-muted-foreground">{v.title}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{asset?.name ?? "—"}</td>
-                      <td className="px-4 py-3 font-semibold">{v.cvss}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{v.epss_score != null ? v.epss_score.toFixed(3) : "—"}</td>
-                      <td className="px-4 py-3 font-mono">{risk ? risk.risk_score.toFixed(2) : "—"}</td>
-                      <td className="px-4 py-3">{risk ? <SevBadge severity={risk.severity} /> : "—"}</td>
-                      <td className="px-4 py-3">
+                    <tr key={v.id} style={{ borderBottom: "1px solid oklch(1 0 0 / 5%)" }} className="last:border-0 hover:bg-white/[0.03] transition-colors">
+                      <td className="px-5 py-3.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono text-primary text-xs">{v.cve}</span>
+                          {v.known_exploited && (
+                            <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/30">KEV</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-5 py-3.5 max-w-xs truncate text-muted-foreground">{v.title}</td>
+                      <td className="px-5 py-3.5 text-muted-foreground">{asset?.name ?? "—"}</td>
+                      <td className="px-5 py-3.5">
+                        <CvssBar value={v.cvss} />
+                      </td>
+                      <td className="px-5 py-3.5 text-muted-foreground">{v.epss_score != null ? v.epss_score.toFixed(3) : "—"}</td>
+                      <td className="px-5 py-3.5 font-mono font-semibold">{risk ? risk.risk_score.toFixed(2) : "—"}</td>
+                      <td className="px-5 py-3.5">{risk ? <SevBadge severity={risk.severity} /> : "—"}</td>
+                      <td className="px-5 py-3.5">
                         <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(v.id!)}>
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>
@@ -251,6 +279,37 @@ export default function VulnerabilitiesPage() {
           )}
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+function StatCard({ label, value, icon, highlight }: { label: string; value: string | number; icon: React.ReactNode; highlight?: boolean }) {
+  return (
+    <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <CardContent className="pt-4 pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
+            <p className={`text-2xl font-bold ${highlight ? "text-primary" : "text-foreground"}`}>{value}</p>
+          </div>
+          <div className={`p-2.5 rounded-lg ${highlight ? "text-primary" : "text-muted-foreground"}`} style={{ background: highlight ? "oklch(0.62 0.20 32 / 12%)" : "oklch(1 0 0 / 5%)" }}>
+            {icon}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function CvssBar({ value }: { value: number }) {
+  const pct = (value / 10) * 100;
+  const color = value >= 9 ? "#ef4444" : value >= 7 ? "#f97316" : value >= 4 ? "#eab308" : "#22c55e";
+  return (
+    <div className="flex items-center gap-2">
+      <div className="w-16 h-1.5 rounded-full bg-white/10 overflow-hidden">
+        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
+      </div>
+      <span className="text-xs font-semibold tabular-nums" style={{ color }}>{value.toFixed(1)}</span>
     </div>
   );
 }

@@ -180,14 +180,15 @@ export default function RiskPage() {
             ) : (
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={aleChartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                  <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `€${(v / 1000).toFixed(0)}k`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 7%)" />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "oklch(0.62 0.03 328)" }} />
+                  <YAxis tick={{ fontSize: 10, fill: "oklch(0.62 0.03 328)" }} tickFormatter={(v) => `€${(v / 1000).toFixed(0)}k`} />
                   <Tooltip
                     formatter={(v) => [`€${Number(v).toLocaleString()}`, "ALE"]}
-                    contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+                    contentStyle={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8 }}
+                    labelStyle={{ color: "oklch(0.97 0 0)" }}
                   />
-                  <Bar dataKey="ALE" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="ALE" fill="oklch(0.62 0.20 32)" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}

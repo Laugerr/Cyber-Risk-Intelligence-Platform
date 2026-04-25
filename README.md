@@ -1,205 +1,117 @@
-# 🛡️ Cyber Risk Intelligence Platform (CRISP)
+# CRISP — Cyber Risk Intelligence Platform
+
+**Live:** [crisp-bice.vercel.app](https://crisp-bice.vercel.app/)
+
+Enterprise cyber risk intelligence platform built with **Next.js 14 + Supabase**. Tracks assets and CVEs, scores risk using CVSS/KEV/EPSS threat intelligence, and models security ROI.
 
 ---
-## 🌐 Live Demo
-🚀 [![Streamlit App](https://img.shields.io/badge/Streamlit-Live%20App-FF4B4B?logo=streamlit&logoColor=white)](https://cyber-risk-intelligence-platform-mlky9pki99u9yoytdalhdp.streamlit.app/)
+
+## Stack
+
+| Layer | Tech |
+|---|---|
+| Frontend | Next.js 14 (App Router, TypeScript) |
+| Database | Supabase (Postgres) |
+| Hosting | Vercel |
+| UI | shadcn/ui · Tailwind CSS · Recharts |
+| Fonts | Ubuntu / Ubuntu Mono |
+| Threat Intel | CISA KEV · FIRST EPSS · NVD |
+
 ---
 
-Enterprise-style Cyber Risk Intelligence Platform built with **Python +
-Streamlit**.
+## Features
 
-CRISP simulates a real-world cyber risk environment including:
+- **Asset inventory** — register servers, workstations, cloud, network, databases with criticality scoring and exposure tagging
+- **Vulnerability tracking** — link CVEs to assets, search NVD live, auto-generate risk alerts on save
+- **Risk scoring** — `risk = CVSS × criticality × exposure` with KEV (+2) and EPSS bonuses
+- **ROSI modeling** — estimate ALE, evaluate security controls, see projected savings vs cost
+- **Executive reports** — download HTML report with KPIs, severity summary, top 10 risks, and ROSI recommendation
+- **Threat intel sync** — daily Vercel cron jobs pull CISA KEV and FIRST EPSS scores automatically
 
--   Asset inventory management
--   Vulnerability tracking
--   Dynamic risk scoring engine
--   Automated alert generation (SIEM-style JSON export)
--   Risk quantification (ALE)
--   ROSI (Return on Security Investment) modeling
--   Executive HTML reporting with preview & download
+---
 
-------------------------------------------------------------------------
+## Risk Scoring Model
 
-## 🚀 Live Architecture Overview
-
-CRISP follows a modular architecture:
-
-    app/                → Streamlit UI pages
-    core/               → Business logic (risk, ROSI, reporting)
-    data/               → SQLite database + seed data
-    exports/            → Generated alerts & reports
-
-------------------------------------------------------------------------
-
-# 📸 Screenshots (Add These)
-
-After deployment, add screenshots to the `/assets/` folder and update
-paths below.
-
-### 1️⃣ Home Dashboard
-
-![Home Dashboard](assets/home_dashboard.png)
-
-------------------------------------------------------------------------
-
-### 2️⃣ Vulnerabilities Page
-
-![Vulnerabilities](assets/vulnerabilities_page.png)
-
-------------------------------------------------------------------------
-
-### 3️⃣ Risk & ROSI Page
-
-![ROSI](assets/rosi_page.png)
-
-------------------------------------------------------------------------
-
-### 4️⃣ Reports Page
-
-![Reports](assets/reports_page.png)
-
-------------------------------------------------------------------------
-
-# ⚙️ Features
-
-## 🗂️ Asset Inventory
-
--   Add assets manually
--   CSV import
--   Filter by owner, type, exposure
--   Criticality scoring (1--5)
--   Internet exposure flag
-
-## 🕷️ Vulnerability Management
-
--   Add CVE manually
--   CVSS scoring
--   Known exploited toggle
--   Dynamic risk calculation
--   Filter by severity, exploited status
--   Auto alert generation
-
-## 🚨 Alert Engine
-
--   Converts vulnerabilities → risk alerts
--   Severity levels: LOW, MEDIUM, HIGH, CRITICAL
--   Export to JSON (SIEM-style)
-
-## 💰 Risk Quantification
-
--   Total risk score aggregation
--   Annual Loss Expectancy (ALE) estimation
--   Visual risk distribution charts
-
-## 🛡️ ROSI Modeling
-
--   Evaluate security controls (MFA, Patch Mgmt, WAF, etc.)
--   Estimate risk reduction value
--   Calculate Return on Security Investment
--   Visual ALE before/after comparison
-
-## 📑 Reporting
-
--   Executive HTML report generation
--   Severity summary
--   Top 10 risks
--   Control recommendation
--   Downloadable HTML preview
-
-------------------------------------------------------------------------
-
-# 🧠 Risk Model (Simplified)
-
-Risk Score =
-
-    (CVSS × Criticality Factor × Exposure Factor) + Exploit Bonus
-
-ALE estimation:
-
-    ALE = Total Risk Score × €10,000 (demo multiplier)
-
-ROSI formula:
-
-    ROSI = (Risk Reduction Value - Control Cost) / Control Cost
-
-------------------------------------------------------------------------
-
-# 🛠️ Installation
-
-Clone the repository:
-
-``` bash
-git clone https://github.com/laugerr/cyber-risk-intelligence-platform.git
-cd cyber-risk-intelligence-platform
+```
+base = CVSS × criticality_multiplier × exposure_multiplier
++ 2.0  if CVE is in CISA KEV (actively exploited)
++ EPSS × 3  if EPSS score available
 ```
 
-Create virtual environment:
+Severity thresholds: **CRITICAL** ≥ 8 · **HIGH** ≥ 5 · **MEDIUM** ≥ 2.5 · **LOW** < 2.5
 
-``` bash
-python3 -m venv .venv
-source .venv/bin/activate   # Linux / Mac
-# or
-.venv\Scripts\Activate.ps1   # Windows
+---
+
+## Local Development
+
+```bash
+# 1. Clone
+git clone https://github.com/Laugerr/Cyber-Risk-Intelligence-Platform.git
+cd Cyber-Risk-Intelligence-Platform
+
+# 2. Install (Linux / WSL2 recommended)
+npm install
+
+# 3. Configure env
+cp .env.local.example .env.local
+# Set NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NVD_API_KEY
+
+# 4. Run schema
+# Paste supabase-schema.sql into Supabase SQL editor
+
+# 5. Start
+npm run dev
 ```
 
-Install dependencies:
+Visit `http://localhost:3000` and click **Load Demo Data** to seed 8 assets + 15 real CVEs.
 
-``` bash
-pip install -r requirements.txt
+---
+
+## Project Structure
+
+```
+app/
+  page.tsx              # Dashboard
+  assets/page.tsx       # Asset inventory
+  vulnerabilities/      # CVE tracking
+  risk/page.tsx         # Risk & ROSI
+  reports/page.tsx      # Executive reports
+  api/
+    assets/             # CRUD
+    vulnerabilities/    # CRUD + alert generation
+    alerts/             # Risk alert feed
+    controls/           # Security controls
+    seed/               # Demo data loader
+    sync/kev/           # CISA KEV sync (cron)
+    sync/epss/          # FIRST EPSS sync (cron)
+    nvd/                # NVD CVE search proxy
+lib/
+  scoring.ts            # Risk scoring engine
+  rosi.ts               # ROSI / ALE model
+  types.ts              # TypeScript interfaces
+components/
+  sidebar.tsx           # Navigation sidebar
+  header.tsx            # Page header bar
 ```
 
-Run the app:
+---
 
-``` bash
-streamlit run app/Home.py
-```
+## Cron Jobs (Vercel)
 
-------------------------------------------------------------------------
+Defined in `vercel.json`:
 
-# 📦 Tech Stack
+| Schedule | Endpoint | Action |
+|---|---|---|
+| Daily 03:00 UTC | `/api/sync/kev` | Pull CISA KEV feed, mark exploited CVEs |
+| Daily 03:30 UTC | `/api/sync/epss` | Pull FIRST EPSS scores for all tracked CVEs |
 
--   Python 3
--   Streamlit
--   SQLite
--   Pandas
--   Pydantic
+---
 
-------------------------------------------------------------------------
+## Environment Variables
 
-# 📈 Future Improvements
-
--   CVE API integration (NVD)
--   Authentication & RBAC
--   Multi-tenant support
--   Plotly interactive dashboards
--   PDF report export
--   Cloud deployment (Render / Streamlit Cloud)
--   Dark mode theme
-
-------------------------------------------------------------------------
-
-# 🎯 Purpose
-
-This project demonstrates:
-
--   Cyber risk quantification
--   Application security modeling
--   Business-aligned security investment decisions
--   Secure software architecture principles
-
-Designed as a portfolio project aligned with MSc Cybersecurity
-Management.
-
-------------------------------------------------------------------------
-
-# 👤 Author
-
-**Salah Eddine El Manssouri**\
-MSc Cybersecurity Management\
-Future Application Security Engineer / SOC Analyst
-
-------------------------------------------------------------------------
-
-## 📜 License
-
-This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
+| `NVD_API_KEY` | NVD API key (optional, higher rate limits) |
+| `CRON_SECRET` | Optional secret to protect cron endpoints |

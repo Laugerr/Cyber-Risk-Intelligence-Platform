@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
-export async function POST() {
+export async function GET() { return handler(); }
+export async function POST() { return handler(); }
+
+async function handler() {
   try {
     const { data: vulns } = await supabase.from("vulnerabilities").select("id, cve");
     if (!vulns || vulns.length === 0) return NextResponse.json({ updated: 0 });

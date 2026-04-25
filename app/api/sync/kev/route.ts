@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
-export async function POST() {
+export async function GET() { return handler(); }
+export async function POST() { return handler(); }
+
+async function handler() {
   try {
     const res = await fetch(
       "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",

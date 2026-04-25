@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/sync/kev",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/sync/epss",
+      "schedule": "30 3 * * *"
+    }
+  ]
+}
