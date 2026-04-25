@@ -1,13 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Server, Bug, AlertTriangle, TrendingUp, Shield, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Server, Bug, AlertTriangle, TrendingUp, Shield, RefreshCw,
+  Database, ArrowUpRight, Activity, Zap, FlaskConical,
+} from "lucide-react";
 import type { Asset, Vulnerability, Alert } from "@/lib/types";
 import { estimateAle } from "@/lib/rosi";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import {
+  PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
+  AreaChart, Area, XAxis, YAxis, CartesianGrid,
+} from "recharts";
+import { toast } from "sonner";
 
 const SEV_COLORS: Record<string, string> = {
   CRITICAL: "#ef4444",
@@ -16,14 +24,17 @@ const SEV_COLORS: Record<string, string> = {
   LOW: "#22c55e",
 };
 
+const SEV_ORDER = ["CRITICAL", "HIGH", "MEDIUM", "LOW"] as const;
+
 export default function DashboardPage() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [vulns, setVulns] = useState<Vulnerability[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
-  const [syncMsg, setSyncMsg] = useState("");
+  const [seeding, setSeeding] = useState(false);
 
-  async function load() {
+  const load = useCallback(async () => {
     const [a, v, al] = await Promise.all([
       fetch("/api/assets").then((r) => r.json()),
       fetch("/api/vulnerabilities").then((r) => r.json()),
@@ -32,150 +43,291 @@ export default function DashboardPage() {
     setAssets(Array.isArray(a) ? a : []);
     setVulns(Array.isArray(v) ? v : []);
     setAlerts(Array.isArray(al) ? al : []);
-  }
+    setLoading(false);
+  }, []);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   const totalRisk = alerts.reduce((s, a) => s + (a.risk_score || 0), 0);
   const ale = estimateAle(totalRisk);
+  const criticalCount = alerts.filter((a) => a.severity === "CRITICAL").length;
+  const exploitedVulns = vulns.filter((v) => v.known_exploited).length;
 
-  const sevCounts = ["CRITICAL", "HIGH", "MEDIUM", "LOW"].map((s) => ({
+  const sevData = SEV_ORDER.map((s) => ({
     name: s,
     value: alerts.filter((a) => a.severity === s).length,
   })).filter((d) => d.value > 0);
 
   const topAlerts = [...alerts].sort((a, b) => b.risk_score - a.risk_score).slice(0, 8);
+  const trendData = topAlerts.map((a) => ({
+    name: a.cve?.replace("CVE-", "") ?? "—",
+    score: a.risk_score,
+  }));
 
   async function syncAll() {
     setSyncing(true);
-    setSyncMsg("");
+    const t = toast.loading("Syncing KEV + EPSS threat intel...");
     try {
       const [kev, epss] = await Promise.all([
         fetch("/api/sync/kev", { method: "POST" }).then((r) => r.json()),
         fetch("/api/sync/epss", { method: "POST" }).then((r) => r.json()),
       ]);
-      setSyncMsg(`KEV: ${kev.updated ?? 0} updated · EPSS: ${epss.updated ?? 0} updated`);
+      toast.success(`Sync complete — KEV: ${kev.updated ?? 0} · EPSS: ${epss.updated ?? 0} updated`, { id: t });
       await load();
+    } catch {
+      toast.error("Sync failed", { id: t });
     } finally {
       setSyncing(false);
+    }
+  }
+
+  async function seedDemo() {
+    setSeeding(true);
+    const t = toast.loading("Loading demo data...");
+    try {
+      const res = await fetch("/api/seed", { method: "POST" });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      toast.success(`Demo loaded — ${data.assets} assets · ${data.vulns} CVEs · ${data.controls} controls`, { id: t });
+      await load();
+    } catch (err) {
+      toast.error(`Failed: ${err}`, { id: t });
+    } finally {
+      setSeeding(false);
     }
   }
 
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground text-sm mt-1">Cyber risk overview across all assets</p>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-1.5 h-6 rounded-full bg-primary" />
+            <h1 className="text-2xl font-bold tracking-tight">Security Dashboard</h1>
+          </div>
+          <p className="text-muted-foreground text-sm ml-3.5">
+            Real-time cyber risk overview ·{" "}
+            {new Date().toLocaleDateString("en-GB", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+          </p>
         </div>
-        <Button onClick={syncAll} disabled={syncing} size="sm" variant="outline" className="gap-2">
-          <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
-          {syncing ? "Syncing..." : "Sync KEV + EPSS"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={seedDemo} disabled={seeding} size="sm" variant="outline" className="gap-2 h-9">
+            <FlaskConical className={`w-3.5 h-3.5 ${seeding ? "animate-pulse" : ""}`} />
+            {seeding ? "Loading..." : "Load Demo Data"}
+          </Button>
+          <Button onClick={syncAll} disabled={syncing} size="sm" className="gap-2 h-9">
+            <RefreshCw className={`w-3.5 h-3.5 ${syncing ? "animate-spin" : ""}`} />
+            {syncing ? "Syncing..." : "Sync Threat Intel"}
+          </Button>
+        </div>
       </div>
-      {syncMsg && <p className="text-xs text-primary">{syncMsg}</p>}
 
-      {/* KPI cards */}
+      {/* KPI Cards */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-        <KpiCard icon={<Server className="w-4 h-4" />} label="Assets" value={assets.length} />
-        <KpiCard icon={<Bug className="w-4 h-4" />} label="Vulnerabilities" value={vulns.length} />
-        <KpiCard icon={<AlertTriangle className="w-4 h-4" />} label="Active Alerts" value={alerts.length} color="text-orange-400" />
-        <KpiCard icon={<TrendingUp className="w-4 h-4" />} label="Est. ALE" value={`€${ale.toLocaleString()}`} color="text-red-400" />
+        <KpiCard loading={loading} icon={<Server className="w-4 h-4" />} label="Total Assets"
+          value={assets.length} sub={`${assets.filter((a) => a.internet_exposed).length} internet exposed`}
+          iconBg="bg-blue-500/10" iconColor="text-blue-400" />
+        <KpiCard loading={loading} icon={<Bug className="w-4 h-4" />} label="Vulnerabilities"
+          value={vulns.length} sub={`${exploitedVulns} actively exploited`}
+          iconBg="bg-orange-500/10" iconColor="text-orange-400" trend={exploitedVulns > 0 ? "up" : undefined} />
+        <KpiCard loading={loading} icon={<AlertTriangle className="w-4 h-4" />} label="Active Alerts"
+          value={alerts.length} sub={`${criticalCount} critical severity`}
+          iconBg="bg-red-500/10" iconColor="text-red-400" trend={criticalCount > 0 ? "up" : undefined} />
+        <KpiCard loading={loading} icon={<TrendingUp className="w-4 h-4" />} label="Estimated ALE"
+          value={`€${(ale / 1000).toFixed(0)}k`} sub="Annual Loss Expectancy"
+          iconBg="bg-purple-500/10" iconColor="text-purple-400" />
       </div>
+
+      {/* Severity breakdown bars */}
+      {!loading && alerts.length > 0 && (
+        <div className="grid grid-cols-4 gap-3">
+          {SEV_ORDER.map((s) => {
+            const count = alerts.filter((a) => a.severity === s).length;
+            const pct = alerts.length > 0 ? Math.round((count / alerts.length) * 100) : 0;
+            return (
+              <div key={s} className="relative rounded-xl p-4 overflow-hidden"
+                style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+                <div className="absolute inset-0 opacity-5" style={{ background: SEV_COLORS[s] }} />
+                <div className="flex items-center justify-between mb-2">
+                  <SevBadge severity={s} />
+                  <span className="text-xs text-muted-foreground">{pct}%</span>
+                </div>
+                <p className="text-2xl font-bold">{count}</p>
+                <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: "oklch(0.2 0 0)" }}>
+                  <div className="h-full rounded-full" style={{ width: `${pct}%`, background: SEV_COLORS[s] }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Charts row */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* Severity pie */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Alerts by Severity</CardTitle>
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+        <Card className="xl:col-span-3" style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Activity className="w-4 h-4 text-primary" /> Top Risk Scores by CVE
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            {sevCounts.length === 0 ? (
-              <p className="text-muted-foreground text-sm py-8 text-center">No alerts yet</p>
+            {loading ? <Skeleton className="h-[200px] w-full" /> : trendData.length === 0 ? (
+              <EmptyChart />
             ) : (
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height={200}>
+                <AreaChart data={trendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="riskGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 6%)" />
+                  <XAxis dataKey="name" tick={{ fontSize: 9, fill: "oklch(0.6 0 0)" }} />
+                  <YAxis tick={{ fontSize: 9, fill: "oklch(0.6 0 0)" }} />
+                  <Tooltip contentStyle={{ background: "oklch(0.16 0 0)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }} />
+                  <Area type="monotone" dataKey="score" stroke="#22c55e" strokeWidth={2} fill="url(#riskGrad)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="xl:col-span-2" style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Zap className="w-4 h-4 text-primary" /> Severity Distribution
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? <Skeleton className="h-[200px] w-full" /> : sevData.length === 0 ? (
+              <EmptyChart />
+            ) : (
+              <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
-                  <Pie data={sevCounts} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, value }) => `${name}: ${value}`}>
-                    {sevCounts.map((entry) => (
+                  <Pie data={sevData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={3}>
+                    {sevData.map((entry) => (
                       <Cell key={entry.name} fill={SEV_COLORS[entry.name]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip contentStyle={{ background: "oklch(0.16 0 0)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }} />
                 </PieChart>
               </ResponsiveContainer>
             )}
           </CardContent>
         </Card>
-
-        {/* Top risks bar */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Top 8 Risk Scores</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {topAlerts.length === 0 ? (
-              <p className="text-muted-foreground text-sm py-8 text-center">No alerts yet</p>
-            ) : (
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={topAlerts} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="cve" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} />
-                  <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-                  <Tooltip
-                    contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
-                  />
-                  <Bar dataKey="risk_score" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
-        </Card>
       </div>
 
-      {/* Recent alerts */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
+      {/* Alerts feed */}
+      <Card style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <CardHeader className="pb-3 flex-row items-center justify-between">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <Shield className="w-4 h-4 text-primary" /> Recent Alerts
           </CardTitle>
+          {alerts.length > 0 && (
+            <Badge variant="outline" className="text-[10px] text-muted-foreground">{alerts.length} total</Badge>
+          )}
         </CardHeader>
-        <CardContent>
-          {alerts.length === 0 ? (
-            <p className="text-muted-foreground text-sm py-4 text-center">No alerts — add vulnerabilities to generate alerts.</p>
-          ) : (
-            <div className="space-y-2">
-              {alerts.slice(0, 10).map((a) => (
-                <div key={a.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <SevBadge severity={a.severity} />
-                    <span className="text-sm truncate">{a.title}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground font-mono ml-4 flex-shrink-0">
-                    {a.risk_score.toFixed(2)}
-                  </span>
-                </div>
-              ))}
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="px-6 space-y-3 pb-4">
+              {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
             </div>
+          ) : alerts.length === 0 ? (
+            <div className="py-14 text-center">
+              <Shield className="w-8 h-8 mx-auto mb-3 text-muted-foreground opacity-20" />
+              <p className="text-sm text-muted-foreground">No alerts — load demo data or add vulnerabilities.</p>
+            </div>
+          ) : (
+            alerts.slice(0, 10).map((a, i) => (
+              <div key={a.id}
+                className="flex items-center justify-between px-6 py-3 hover:bg-white/[0.02] transition-colors"
+                style={{ borderBottom: i < Math.min(alerts.length, 10) - 1 ? "1px solid oklch(1 0 0 / 6%)" : "none" }}>
+                <div className="flex items-center gap-3 min-w-0">
+                  <SevBadge severity={a.severity} />
+                  <div className="min-w-0">
+                    <p className="text-sm truncate font-medium">{a.title}</p>
+                    <p className="text-[11px] text-muted-foreground font-mono">{a.cve}</p>
+                  </div>
+                </div>
+                <div className="ml-4 flex-shrink-0 text-right">
+                  <p className="text-sm font-bold font-mono"
+                    style={{ color: a.risk_score >= 12 ? "#ef4444" : a.risk_score >= 9 ? "#f97316" : "inherit" }}>
+                    {a.risk_score.toFixed(2)}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">risk score</p>
+                </div>
+              </div>
+            ))
           )}
         </CardContent>
       </Card>
+
+      {/* Bottom stats */}
+      {!loading && assets.length > 0 && (
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+          <StatCard icon={<Database className="w-4 h-4 text-blue-400" />}
+            label="Internet-Exposed Assets" value={assets.filter((a) => a.internet_exposed).length}
+            sub="requiring external monitoring" color="text-blue-400" />
+          <StatCard icon={<AlertTriangle className="w-4 h-4 text-red-400" />}
+            label="KEV Vulnerabilities" value={vulns.filter((v) => v.known_exploited).length}
+            sub="in CISA Known Exploited catalog" color="text-red-400" />
+          <StatCard icon={<TrendingUp className="w-4 h-4 text-primary" />}
+            label="Avg Risk Score" value={alerts.length > 0 ? (totalRisk / alerts.length).toFixed(2) : "0"}
+            sub="per alert across all assets" color="text-primary" />
+        </div>
+      )}
     </div>
   );
 }
 
-function KpiCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string | number; color?: string }) {
+function KpiCard({ icon, label, value, sub, iconBg, iconColor, trend, loading }: {
+  icon: React.ReactNode; label: string; value: string | number; sub: string;
+  iconBg: string; iconColor: string; trend?: "up"; loading?: boolean;
+}) {
   return (
-    <Card>
+    <Card style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
       <CardContent className="pt-5">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-muted-foreground text-xs uppercase tracking-wider">{label}</span>
-          <span className="text-muted-foreground">{icon}</span>
+        <div className="flex items-start justify-between mb-3">
+          <div className={`flex items-center justify-center w-9 h-9 rounded-lg ${iconBg}`}>
+            <span className={iconColor}>{icon}</span>
+          </div>
+          {trend && <ArrowUpRight className="w-4 h-4 text-red-400" />}
         </div>
-        <p className={`text-2xl font-bold ${color ?? "text-foreground"}`}>{value}</p>
+        {loading ? (
+          <><Skeleton className="h-7 w-16 mb-1" /><Skeleton className="h-3 w-28" /></>
+        ) : (
+          <><p className="text-2xl font-bold tracking-tight">{value}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{sub}</p></>
+        )}
+        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-2 font-medium">{label}</p>
       </CardContent>
     </Card>
+  );
+}
+
+function StatCard({ icon, label, value, sub, color }: {
+  icon: React.ReactNode; label: string; value: string | number; sub: string; color: string;
+}) {
+  return (
+    <div className="flex items-center gap-4 rounded-xl p-4"
+      style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-secondary flex-shrink-0">{icon}</div>
+      <div>
+        <p className={`text-xl font-bold ${color}`}>{value}</p>
+        <p className="text-xs font-medium">{label}</p>
+        <p className="text-[11px] text-muted-foreground">{sub}</p>
+      </div>
+    </div>
+  );
+}
+
+function EmptyChart() {
+  return (
+    <div className="h-[200px] flex items-center justify-center">
+      <p className="text-sm text-muted-foreground">No data yet</p>
+    </div>
   );
 }
 
@@ -186,9 +338,5 @@ function SevBadge({ severity }: { severity: string }) {
     MEDIUM: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30",
     LOW: "bg-green-500/15 text-green-400 border-green-500/30",
   };
-  return (
-    <Badge variant="outline" className={`text-[10px] font-bold ${map[severity] ?? ""}`}>
-      {severity}
-    </Badge>
-  );
+  return <Badge variant="outline" className={`text-[10px] font-bold shrink-0 ${map[severity] ?? ""}`}>{severity}</Badge>;
 }

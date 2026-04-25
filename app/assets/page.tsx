@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Trash2, Server } from "lucide-react";
 import type { Asset, AssetType } from "@/lib/types";
+import { toast } from "sonner";
 
 const ASSET_TYPES: AssetType[] = ["Server", "Workstation", "Cloud", "Network", "WebApp", "Database", "Other"];
 
@@ -48,6 +49,7 @@ export default function AssetsPage() {
     if (res.ok) {
       setForm(defaultForm);
       setOpen(false);
+      toast.success("Asset added successfully");
       await load();
     } else {
       const d = await res.json();
@@ -59,6 +61,7 @@ export default function AssetsPage() {
   async function handleDelete(id: number) {
     if (!confirm("Delete this asset and all its vulnerabilities?")) return;
     await fetch(`/api/assets/${id}`, { method: "DELETE" });
+    toast.success("Asset deleted");
     await load();
   }
 
@@ -112,7 +115,7 @@ export default function AssetsPage() {
         </Dialog>
       </div>
 
-      <Card>
+      <Card style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
         <CardContent className="p-0">
           {assets.length === 0 ? (
             <div className="py-16 text-center text-muted-foreground">

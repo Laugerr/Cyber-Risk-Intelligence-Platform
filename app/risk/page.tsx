@@ -8,10 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, TrendingUp } from "lucide-react";
+import { Plus, TrendingUp } from "lucide-react";
 import type { Alert, Control } from "@/lib/types";
 import { estimateAle, calculateRosi } from "@/lib/rosi";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { toast } from "sonner";
 
 const defaultForm = { name: "", annual_cost_eur: 5000, effectiveness_pct: 30, notes: "" };
 
@@ -68,6 +69,7 @@ export default function RiskPage() {
     if (res.ok) {
       setForm(defaultForm);
       setOpen(false);
+      toast.success("Security control added");
       await load();
     } else {
       const d = await res.json();

@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Trash2, Bug, Search } from "lucide-react";
 import type { Asset, Vulnerability } from "@/lib/types";
 import { calculateRisk } from "@/lib/scoring";
+import { toast } from "sonner";
 
 const defaultForm = {
   asset_id: "",
@@ -63,6 +64,7 @@ export default function VulnerabilitiesPage() {
       setNvdResults([]);
       setNvdSearch("");
       setOpen(false);
+      toast.success("Vulnerability added and alert generated");
       await load();
     } else {
       const d = await res.json();
@@ -74,6 +76,7 @@ export default function VulnerabilitiesPage() {
   async function handleDelete(id: number) {
     if (!confirm("Delete this vulnerability?")) return;
     await fetch(`/api/vulnerabilities/${id}`, { method: "DELETE" });
+    toast.success("Vulnerability deleted");
     await load();
   }
 
@@ -199,7 +202,7 @@ export default function VulnerabilitiesPage() {
         <Input className="pl-9" placeholder="Filter by CVE or title…" value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      <Card>
+      <Card style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
         <CardContent className="p-0">
           {filtered.length === 0 ? (
             <div className="py-16 text-center text-muted-foreground">
