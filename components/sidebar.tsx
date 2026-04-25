@@ -19,20 +19,20 @@ export function Sidebar() {
   return (
     <aside
       className="fixed left-0 top-0 h-screen w-64 flex flex-col z-50"
-      style={{ background: "oklch(0.09 0 0)", borderRight: "1px solid oklch(1 0 0 / 6%)" }}
+      style={{ background: "oklch(0.08 0.04 328)", borderRight: "1px solid oklch(1 0 0 / 7%)" }}
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5" style={{ borderBottom: "1px solid oklch(1 0 0 / 6%)" }}>
         <div
           className="relative flex items-center justify-center w-9 h-9 rounded-xl"
-          style={{ background: "oklch(0.72 0.17 145 / 15%)", border: "1px solid oklch(0.72 0.17 145 / 30%)" }}
+          style={{ background: "oklch(0.62 0.20 32 / 15%)", border: "1px solid oklch(0.62 0.20 32 / 30%)" }}
         >
           <Shield className="w-4 h-4 text-primary" />
           <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-primary animate-pulse" />
         </div>
         <div>
           <p className="font-bold text-sm tracking-wide text-foreground">CRISP</p>
-          <p className="text-[10px] tracking-widest uppercase" style={{ color: "oklch(0.72 0.17 145)" }}>
+          <p className="text-[10px] tracking-widest uppercase" style={{ color: "oklch(0.62 0.20 32)" }}>
             Cyber Risk Intel
           </p>
         </div>
@@ -57,7 +57,7 @@ export function Sidebar() {
               )}
               style={
                 active
-                  ? { background: "oklch(0.72 0.17 145 / 10%)", border: "1px solid oklch(0.72 0.17 145 / 20%)" }
+                  ? { background: "oklch(0.62 0.20 32 / 12%)", border: "1px solid oklch(0.62 0.20 32 / 25%)" }
                   : { border: "1px solid transparent" }
               }
             >
@@ -79,7 +79,7 @@ export function Sidebar() {
       {/* Status footer */}
       <div
         className="mx-3 mb-4 px-4 py-3 rounded-xl"
-        style={{ background: "oklch(0.72 0.17 145 / 6%)", border: "1px solid oklch(0.72 0.17 145 / 15%)" }}
+        style={{ background: "oklch(0.62 0.20 32 / 8%)", border: "1px solid oklch(0.62 0.20 32 / 20%)" }}
       >
         <div className="flex items-center gap-2 mb-0.5">
           <Activity className="w-3 h-3 text-primary" />

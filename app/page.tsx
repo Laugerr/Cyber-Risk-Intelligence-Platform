@@ -147,14 +147,14 @@ export default function DashboardPage() {
             const pct = alerts.length > 0 ? Math.round((count / alerts.length) * 100) : 0;
             return (
               <div key={s} className="relative rounded-xl p-4 overflow-hidden"
-                style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+                style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
                 <div className="absolute inset-0 opacity-5" style={{ background: SEV_COLORS[s] }} />
                 <div className="flex items-center justify-between mb-2">
                   <SevBadge severity={s} />
                   <span className="text-xs text-muted-foreground">{pct}%</span>
                 </div>
                 <p className="text-2xl font-bold">{count}</p>
-                <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: "oklch(0.2 0 0)" }}>
+                <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: "oklch(0.20 0.03 328)" }}>
                   <div className="h-full rounded-full" style={{ width: `${pct}%`, background: SEV_COLORS[s] }} />
                 </div>
               </div>
@@ -165,7 +165,7 @@ export default function DashboardPage() {
 
       {/* Charts row */}
       <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-        <Card className="xl:col-span-3" style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <Card className="xl:col-span-3" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <Activity className="w-4 h-4 text-primary" /> Top Risk Scores by CVE
@@ -179,22 +179,22 @@ export default function DashboardPage() {
                 <AreaChart data={trendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                   <defs>
                     <linearGradient id="riskGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#E95420" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#E95420" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 6%)" />
                   <XAxis dataKey="name" tick={{ fontSize: 9, fill: "oklch(0.6 0 0)" }} />
                   <YAxis tick={{ fontSize: 9, fill: "oklch(0.6 0 0)" }} />
-                  <Tooltip contentStyle={{ background: "oklch(0.16 0 0)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }} />
-                  <Area type="monotone" dataKey="score" stroke="#22c55e" strokeWidth={2} fill="url(#riskGrad)" />
+                  <Tooltip contentStyle={{ background: "oklch(0.17 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }} />
+                  <Area type="monotone" dataKey="score" stroke="#E95420" strokeWidth={2} fill="url(#riskGrad)" />
                 </AreaChart>
               </ResponsiveContainer>
             )}
           </CardContent>
         </Card>
 
-        <Card className="xl:col-span-2" style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <Card className="xl:col-span-2" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <Zap className="w-4 h-4 text-primary" /> Severity Distribution
@@ -211,7 +211,7 @@ export default function DashboardPage() {
                       <Cell key={entry.name} fill={SEV_COLORS[entry.name]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ background: "oklch(0.16 0 0)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }} />
+                  <Tooltip contentStyle={{ background: "oklch(0.17 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }} />
                 </PieChart>
               </ResponsiveContainer>
             )}
@@ -220,7 +220,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Alerts feed */}
-      <Card style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
         <CardHeader className="pb-3 flex-row items-center justify-between">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <Shield className="w-4 h-4 text-primary" /> Recent Alerts
@@ -287,7 +287,7 @@ function KpiCard({ icon, label, value, sub, iconBg, iconColor, trend, loading }:
   iconBg: string; iconColor: string; trend?: "up"; loading?: boolean;
 }) {
   return (
-    <Card style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+    <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
       <CardContent className="pt-5">
         <div className="flex items-start justify-between mb-3">
           <div className={`flex items-center justify-center w-9 h-9 rounded-lg ${iconBg}`}>
@@ -312,7 +312,7 @@ function StatCard({ icon, label, value, sub, color }: {
 }) {
   return (
     <div className="flex items-center gap-4 rounded-xl p-4"
-      style={{ background: "oklch(0.12 0 0)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
       <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-secondary flex-shrink-0">{icon}</div>
       <div>
         <p className={`text-xl font-bold ${color}`}>{value}</p>
