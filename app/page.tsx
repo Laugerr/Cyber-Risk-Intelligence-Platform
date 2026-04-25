@@ -78,10 +78,7 @@ export default function DashboardPage() {
   const riskByAsset = assets
     .map((asset) => {
       const score = alerts
-        .filter((al) => {
-          const v = vulns.find((v) => v.id === al.vulnerability_id);
-          return v?.asset_id === asset.id;
-        })
+        .filter((al) => al.asset_id === asset.id)
         .reduce((s, al) => s + al.risk_score, 0);
       return { name: asset.name.length > 14 ? asset.name.slice(0, 14) + "…" : asset.name, score: parseFloat(score.toFixed(2)) };
     })
