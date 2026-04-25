@@ -8,16 +8,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, TrendingUp } from "lucide-react";
-import type { Alert, Control } from "@/lib/types";
+import { Plus, TrendingUp, Activity } from "lucide-react";
+import type { Alert, Asset, Control } from "@/lib/types";
 import { estimateAle, calculateRosi } from "@/lib/rosi";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList, RadarChart, Radar, PolarGrid, PolarAngleAxis } from "recharts";
 import { toast } from "sonner";
 
 const defaultForm = { name: "", annual_cost_eur: 5000, effectiveness_pct: 30, notes: "" };
 
 export default function RiskPage() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
   const [controls, setControls] = useState<Control[]>([]);
   const [selectedControlId, setSelectedControlId] = useState<string>("");
   const [open, setOpen] = useState(false);
@@ -26,14 +27,16 @@ export default function RiskPage() {
   const [error, setError] = useState("");
 
   async function load() {
-    const [al, co] = await Promise.all([
+    const [al, co, as_] = await Promise.all([
       fetch("/api/alerts").then((r) => r.json()),
       fetch("/api/controls").then((r) => r.json()),
+      fetch("/api/assets").then((r) => r.json()),
     ]);
     const alertList = Array.isArray(al) ? al : [];
     const controlList = Array.isArray(co) ? co : [];
     setAlerts(alertList);
     setControls(controlList);
+    setAssets(Array.isArray(as_) ? as_ : []);
     if (!selectedControlId && controlList.length > 0) {
       setSelectedControlId(String(controlList[0].id));
     }
@@ -56,6 +59,26 @@ export default function RiskPage() {
         { name: "After Control", ALE: Math.max(0, aleAfter) },
       ]
     : [];
+
+  // Risk by asset — group alerts by asset_id
+  const assetMap = Object.fromEntries(assets.map((a) => [a.id!, a]));
+  const riskByAsset = assets
+    .map((asset) => ({
+      name: asset.name.length > 14 ? asset.name.slice(0, 14) + "…" : asset.name,
+      score: parseFloat(
+        alerts.filter((al) => al.asset_id === asset.id).reduce((s, al) => s + al.risk_score, 0).toFixed(2)
+      ),
+    }))
+    .filter((d) => d.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8);
+
+  // Radar: control comparison across key metrics
+  const radarData = controls.slice(0, 6).map((c) => ({
+    name: c.name.length > 16 ? c.name.slice(0, 16) + "…" : c.name,
+    Effectiveness: c.effectiveness_pct,
+    CostEfficiency: Math.min(100, Math.round((c.effectiveness_pct / Math.max(1, c.annual_cost_eur / 1000)) * 10)),
+  }));
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -96,6 +119,65 @@ export default function RiskPage() {
           color={rosi >= 0 ? "text-green-400" : "text-red-400"}
         />
       </div>
+
+      {/* Risk by Asset + Control Radar */}
+      {(riskByAsset.length > 0 || radarData.length > 0) && (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Risk by Asset */}
+          <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Activity className="w-4 h-4 text-primary" /> Risk Score by Asset
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={riskByAsset} layout="vertical" margin={{ top: 0, right: 45, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 6%)" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 9, fill: "oklch(0.6 0 0)" }} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "oklch(0.75 0 0)" }} width={95} />
+                  <Tooltip
+                    contentStyle={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }}
+                    formatter={(v) => [Number(v).toFixed(2), "Risk Score"]}
+                  />
+                  <Bar dataKey="score" radius={[0, 4, 4, 0]}>
+                    {riskByAsset.map((_, i) => (
+                      <Cell key={i} fill={i === 0 ? "#ef4444" : i === 1 ? "#f97316" : "oklch(0.62 0.20 32)"} fillOpacity={1 - i * 0.07} />
+                    ))}
+                    <LabelList dataKey="score" position="right" style={{ fontSize: 10, fill: "oklch(0.65 0 0)" }} formatter={(v: number) => v.toFixed(1)} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Control Radar */}
+          <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-primary" /> Control Effectiveness vs Cost Efficiency
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {radarData.length === 0 ? (
+                <div className="h-[220px] flex items-center justify-center text-sm text-muted-foreground">No controls yet</div>
+              ) : (
+                <ResponsiveContainer width="100%" height={220}>
+                  <RadarChart data={radarData}>
+                    <PolarGrid stroke="oklch(1 0 0 / 10%)" />
+                    <PolarAngleAxis dataKey="name" tick={{ fontSize: 9, fill: "oklch(0.65 0 0)" }} />
+                    <Radar name="Effectiveness %" dataKey="Effectiveness" stroke="#E95420" fill="#E95420" fillOpacity={0.25} />
+                    <Radar name="Cost Efficiency" dataKey="CostEfficiency" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} />
+                    <Tooltip
+                      contentStyle={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* ROSI panel */}

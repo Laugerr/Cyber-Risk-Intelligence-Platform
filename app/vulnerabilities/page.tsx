@@ -12,6 +12,20 @@ import { Plus, Trash2, Bug, Search, Flame, ShieldOff, BarChart2 } from "lucide-r
 import type { Asset, Vulnerability } from "@/lib/types";
 import { calculateRisk } from "@/lib/scoring";
 import { toast } from "sonner";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  ScatterChart, Scatter, ZAxis, Cell,
+} from "recharts";
+
+const SEV_COLORS: Record<string, string> = {
+  CRITICAL: "#ef4444", HIGH: "#f97316", MEDIUM: "#eab308", LOW: "#22c55e",
+};
+const TOOLTIP_STYLE = {
+  background: "oklch(0.17 0.04 328)",
+  border: "1px solid oklch(1 0 0 / 10%)",
+  borderRadius: 8,
+  fontSize: 12,
+};
 
 const defaultForm = {
   asset_id: "",
@@ -212,6 +226,11 @@ export default function VulnerabilitiesPage() {
         </div>
       )}
 
+      {/* Charts */}
+      {vulns.length > 0 && (
+        <VulnCharts vulns={vulns} assetMap={assetMap} />
+      )}
+
       {/* Search */}
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -279,6 +298,89 @@ export default function VulnerabilitiesPage() {
           )}
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+function VulnCharts({ vulns, assetMap }: { vulns: Vulnerability[]; assetMap: Record<number, Asset> }) {
+  // CVSS distribution buckets
+  const buckets = [
+    { range: "0–3.9", min: 0, max: 3.9, color: "#22c55e" },
+    { range: "4–6.9", min: 4, max: 6.9, color: "#eab308" },
+    { range: "7–8.9", min: 7, max: 8.9, color: "#f97316" },
+    { range: "9–10", min: 9, max: 10, color: "#ef4444" },
+  ];
+  const distData = buckets.map((b) => ({
+    range: b.range,
+    count: vulns.filter((v) => v.cvss >= b.min && v.cvss <= b.max).length,
+    color: b.color,
+  }));
+
+  // CVSS vs EPSS scatter — only vulns with EPSS data
+  const scatterData = vulns
+    .filter((v) => v.epss_score != null)
+    .map((v) => {
+      const asset = assetMap[v.asset_id];
+      const risk = asset ? calculateRisk(v.cvss, asset.criticality, asset.internet_exposed, v.known_exploited, false, v.epss_score) : null;
+      return {
+        cvss: v.cvss,
+        epss: parseFloat((v.epss_score! * 100).toFixed(2)),
+        severity: risk?.severity ?? "LOW",
+        cve: v.cve,
+      };
+    });
+
+  return (
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      {/* CVSS Distribution */}
+      <div className="rounded-xl p-5" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <p className="text-sm font-semibold mb-4 flex items-center gap-2">
+          <BarChart2 className="w-4 h-4 text-primary" /> CVSS Distribution
+        </p>
+        <ResponsiveContainer width="100%" height={180}>
+          <BarChart data={distData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 6%)" vertical={false} />
+            <XAxis dataKey="range" tick={{ fontSize: 11, fill: "oklch(0.65 0 0)" }} />
+            <YAxis tick={{ fontSize: 10, fill: "oklch(0.65 0 0)" }} allowDecimals={false} />
+            <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => [v, "Vulnerabilities"]} />
+            <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+              {distData.map((d, i) => <Cell key={i} fill={d.color} />)}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* CVSS vs EPSS Scatter */}
+      <div className="rounded-xl p-5" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <p className="text-sm font-semibold mb-1 flex items-center gap-2">
+          <Flame className="w-4 h-4 text-primary" /> CVSS vs EPSS Exploit Probability
+        </p>
+        <p className="text-[10px] text-muted-foreground mb-3">Higher right = most dangerous · colored by severity</p>
+        {scatterData.length === 0 ? (
+          <div className="h-[168px] flex items-center justify-center text-sm text-muted-foreground">
+            Sync threat intel to populate EPSS scores
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={168}>
+            <ScatterChart margin={{ top: 0, right: 10, left: -15, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 6%)" />
+              <XAxis type="number" dataKey="cvss" domain={[0, 10]} name="CVSS" tick={{ fontSize: 9, fill: "oklch(0.65 0 0)" }} label={{ value: "CVSS", position: "insideBottomRight", offset: -5, style: { fontSize: 9, fill: "oklch(0.5 0 0)" } }} />
+              <YAxis type="number" dataKey="epss" name="EPSS %" tick={{ fontSize: 9, fill: "oklch(0.65 0 0)" }} tickFormatter={(v) => `${v}%`} />
+              <ZAxis range={[40, 40]} />
+              <Tooltip
+                contentStyle={TOOLTIP_STYLE}
+                cursor={{ strokeDasharray: "3 3", stroke: "oklch(1 0 0 / 20%)" }}
+                formatter={(v, name) => [name === "EPSS %" ? `${v}%` : v, name]}
+              />
+              <Scatter data={scatterData} isAnimationActive={false}>
+                {scatterData.map((d, i) => (
+                  <Cell key={i} fill={SEV_COLORS[d.severity] ?? "#E95420"} fillOpacity={0.8} />
+                ))}
+              </Scatter>
+            </ScatterChart>
+          </ResponsiveContainer>
+        )}
+      </div>
     </div>
   );
 }

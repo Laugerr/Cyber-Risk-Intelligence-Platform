@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Server, Bug, AlertTriangle, TrendingUp, Shield, RefreshCw,
-  Database, ArrowUpRight, Activity, Zap, FlaskConical,
+  ArrowUpRight, Activity, Zap, FlaskConical, PieChartIcon,
 } from "lucide-react";
 import type { Asset, Vulnerability, Alert } from "@/lib/types";
 import { estimateAle } from "@/lib/rosi";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
+  BarChart, Bar, LabelList,
 } from "recharts";
 import { toast } from "sonner";
 
@@ -24,7 +25,16 @@ const SEV_COLORS: Record<string, string> = {
   LOW: "#22c55e",
 };
 
+const TYPE_COLORS = ["#E95420", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899"];
+
 const SEV_ORDER = ["CRITICAL", "HIGH", "MEDIUM", "LOW"] as const;
+
+const TOOLTIP_STYLE = {
+  background: "oklch(0.17 0.04 328)",
+  border: "1px solid oklch(1 0 0 / 10%)",
+  borderRadius: 8,
+  fontSize: 12,
+};
 
 export default function DashboardPage() {
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -61,8 +71,28 @@ export default function DashboardPage() {
   const topAlerts = [...alerts].sort((a, b) => b.risk_score - a.risk_score).slice(0, 8);
   const trendData = topAlerts.map((a) => ({
     name: a.cve?.replace("CVE-", "") ?? "—",
-    score: a.risk_score,
+    score: parseFloat(a.risk_score.toFixed(2)),
   }));
+
+  // Risk score aggregated by asset
+  const riskByAsset = assets
+    .map((asset) => {
+      const score = alerts
+        .filter((al) => {
+          const v = vulns.find((v) => v.id === al.vulnerability_id);
+          return v?.asset_id === asset.id;
+        })
+        .reduce((s, al) => s + al.risk_score, 0);
+      return { name: asset.name.length > 14 ? asset.name.slice(0, 14) + "…" : asset.name, score: parseFloat(score.toFixed(2)) };
+    })
+    .filter((d) => d.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8);
+
+  // Asset type breakdown
+  const typeMap: Record<string, number> = {};
+  for (const a of assets) typeMap[a.asset_type] = (typeMap[a.asset_type] || 0) + 1;
+  const typeData = Object.entries(typeMap).map(([name, value]) => ({ name, value }));
 
   async function syncAll() {
     setSyncing(true);
@@ -163,7 +193,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Charts row */}
+      {/* Charts row 1 — CVE trend + Severity donut */}
       <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
         <Card className="xl:col-span-3" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
@@ -186,7 +216,7 @@ export default function DashboardPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 6%)" />
                   <XAxis dataKey="name" tick={{ fontSize: 9, fill: "oklch(0.6 0 0)" }} />
                   <YAxis tick={{ fontSize: 9, fill: "oklch(0.6 0 0)" }} />
-                  <Tooltip contentStyle={{ background: "oklch(0.17 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }} />
+                  <Tooltip contentStyle={TOOLTIP_STYLE} />
                   <Area type="monotone" dataKey="score" stroke="#E95420" strokeWidth={2} fill="url(#riskGrad)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -211,9 +241,74 @@ export default function DashboardPage() {
                       <Cell key={entry.name} fill={SEV_COLORS[entry.name]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ background: "oklch(0.17 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }} />
+                  <Tooltip contentStyle={TOOLTIP_STYLE} />
                 </PieChart>
               </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts row 2 — Risk by Asset + Asset Type */}
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+        <Card className="xl:col-span-3" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-primary" /> Risk Score by Asset
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? <Skeleton className="h-[220px] w-full" /> : riskByAsset.length === 0 ? (
+              <EmptyChart />
+            ) : (
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={riskByAsset} layout="vertical" margin={{ top: 0, right: 40, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 6%)" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 9, fill: "oklch(0.6 0 0)" }} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "oklch(0.75 0 0)" }} width={90} />
+                  <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => [Number(v).toFixed(2), "Risk Score"]} />
+                  <Bar dataKey="score" radius={[0, 4, 4, 0]}>
+                    {riskByAsset.map((entry, i) => (
+                      <Cell key={i} fill={i === 0 ? "#ef4444" : i === 1 ? "#f97316" : "#E95420"} fillOpacity={1 - i * 0.08} />
+                    ))}
+                    <LabelList dataKey="score" position="right" style={{ fontSize: 10, fill: "oklch(0.7 0 0)" }} formatter={(v: number) => v.toFixed(1)} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="xl:col-span-2" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <PieChartIcon className="w-4 h-4 text-primary" /> Asset Types
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? <Skeleton className="h-[220px] w-full" /> : typeData.length === 0 ? (
+              <EmptyChart />
+            ) : (
+              <div className="flex flex-col items-center">
+                <ResponsiveContainer width="100%" height={150}>
+                  <PieChart>
+                    <Pie data={typeData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={3}>
+                      {typeData.map((_, i) => (
+                        <Cell key={i} fill={TYPE_COLORS[i % TYPE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={TOOLTIP_STYLE} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mt-1">
+                  {typeData.map((t, i) => (
+                    <span key={t.name} className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                      <span className="w-2 h-2 rounded-full inline-block" style={{ background: TYPE_COLORS[i % TYPE_COLORS.length] }} />
+                      {t.name} <span className="font-semibold text-foreground">{t.value}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -263,21 +358,6 @@ export default function DashboardPage() {
           )}
         </CardContent>
       </Card>
-
-      {/* Bottom stats */}
-      {!loading && assets.length > 0 && (
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-          <StatCard icon={<Database className="w-4 h-4 text-blue-400" />}
-            label="Internet-Exposed Assets" value={assets.filter((a) => a.internet_exposed).length}
-            sub="requiring external monitoring" color="text-blue-400" />
-          <StatCard icon={<AlertTriangle className="w-4 h-4 text-red-400" />}
-            label="KEV Vulnerabilities" value={vulns.filter((v) => v.known_exploited).length}
-            sub="in CISA Known Exploited catalog" color="text-red-400" />
-          <StatCard icon={<TrendingUp className="w-4 h-4 text-primary" />}
-            label="Avg Risk Score" value={alerts.length > 0 ? (totalRisk / alerts.length).toFixed(2) : "0"}
-            sub="per alert across all assets" color="text-primary" />
-        </div>
-      )}
     </div>
   );
 }
@@ -304,22 +384,6 @@ function KpiCard({ icon, label, value, sub, iconBg, iconColor, trend, loading }:
         <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-2 font-medium">{label}</p>
       </CardContent>
     </Card>
-  );
-}
-
-function StatCard({ icon, label, value, sub, color }: {
-  icon: React.ReactNode; label: string; value: string | number; sub: string; color: string;
-}) {
-  return (
-    <div className="flex items-center gap-4 rounded-xl p-4"
-      style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
-      <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-secondary flex-shrink-0">{icon}</div>
-      <div>
-        <p className={`text-xl font-bold ${color}`}>{value}</p>
-        <p className="text-xs font-medium">{label}</p>
-        <p className="text-[11px] text-muted-foreground">{sub}</p>
-      </div>
-    </div>
   );
 }
 
