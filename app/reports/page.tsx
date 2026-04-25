@@ -175,7 +175,7 @@ export default function ReportsPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* KPIs */}
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <PreviewKpi label="Assets" value={assets.length} />
             <PreviewKpi label="Active Alerts" value={alerts.length} />
             <PreviewKpi label="Total Risk Score" value={totalRisk.toFixed(2)} />

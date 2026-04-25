@@ -125,7 +125,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
@@ -151,7 +151,7 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KpiCard loading={loading} icon={<Server className="w-4 h-4" />} label="Total Assets"
           value={assets.length} sub={`${assets.filter((a) => a.internet_exposed).length} internet exposed`}
           iconBg="bg-blue-500/10" iconColor="text-blue-400" />
@@ -168,7 +168,7 @@ export default function DashboardPage() {
 
       {/* Severity breakdown bars */}
       {!loading && alerts.length > 0 && (
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {SEV_ORDER.map((s) => {
             const count = alerts.filter((a) => a.severity === s).length;
             const pct = alerts.length > 0 ? Math.round((count / alerts.length) * 100) : 0;
@@ -191,8 +191,8 @@ export default function DashboardPage() {
       )}
 
       {/* Charts row 1 — CVE trend + Severity donut */}
-      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-        <Card className="xl:col-span-3" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <Card className="lg:col-span-3" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <Activity className="w-4 h-4 text-primary" /> Top Risk Scores by CVE
@@ -221,7 +221,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="xl:col-span-2" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <Card className="lg:col-span-2" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <Zap className="w-4 h-4 text-primary" /> Severity Distribution
@@ -247,8 +247,8 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts row 2 — Risk by Asset + Asset Type */}
-      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-        <Card className="xl:col-span-3" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <Card className="lg:col-span-3" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-primary" /> Risk Score by Asset
@@ -276,7 +276,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="xl:col-span-2" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <Card className="lg:col-span-2" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <PieChartIcon className="w-4 h-4 text-primary" /> Asset Types

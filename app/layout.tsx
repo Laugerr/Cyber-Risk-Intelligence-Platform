@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Ubuntu, Ubuntu_Mono } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/sidebar";
-import { Header } from "@/components/header";
+import { LayoutClient } from "@/components/layout-client";
 import { Toaster } from "@/components/ui/sonner";
 
 const ubuntu = Ubuntu({
@@ -25,13 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`dark ${ubuntu.variable} ${ubuntuMono.variable}`}>
       <body className="flex min-h-screen bg-background text-foreground antialiased">
-        <Sidebar />
-        <main className="flex-1 ml-64 min-h-screen overflow-y-auto flex flex-col">
-          <Header />
-          <div className="p-8 flex-1">
-            {children}
-          </div>
-        </main>
+        <LayoutClient>{children}</LayoutClient>
         <Toaster position="bottom-right" theme="dark" richColors />
       </body>
     </html>

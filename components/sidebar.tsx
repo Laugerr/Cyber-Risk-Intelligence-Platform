@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Activity } from "lucide-react";
+import { Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Activity, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -13,33 +13,52 @@ const navItems = [
   { href: "/reports", label: "Reports", icon: FileText },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  open?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ open = false, onClose }: SidebarProps) {
   const pathname = usePathname();
 
   return (
     <aside
-      className="fixed left-0 top-0 h-screen w-64 flex flex-col z-50"
+      className={cn(
+        "fixed left-0 top-0 h-screen w-64 flex flex-col z-50 transition-transform duration-200",
+        // Desktop: always visible
+        "lg:translate-x-0",
+        // Mobile: slide in/out
+        open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      )}
       style={{ background: "oklch(0.08 0.04 328)", borderRight: "1px solid oklch(1 0 0 / 7%)" }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5" style={{ borderBottom: "1px solid oklch(1 0 0 / 6%)" }}>
-        <div
-          className="relative flex items-center justify-center w-9 h-9 rounded-xl"
-          style={{ background: "oklch(0.62 0.20 32 / 15%)", border: "1px solid oklch(0.62 0.20 32 / 30%)" }}
-        >
-          <Shield className="w-4 h-4 text-primary" />
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-primary animate-pulse" />
+      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid oklch(1 0 0 / 6%)" }}>
+        <div className="flex items-center gap-3">
+          <div
+            className="relative flex items-center justify-center w-8 h-8 rounded-xl flex-shrink-0"
+            style={{ background: "oklch(0.62 0.20 32 / 15%)", border: "1px solid oklch(0.62 0.20 32 / 30%)" }}
+          >
+            <Shield className="w-4 h-4 text-primary" />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-primary animate-pulse" />
+          </div>
+          <div>
+            <p className="font-bold text-sm tracking-wide text-foreground">CRISP</p>
+            <p className="text-[10px] tracking-widest uppercase" style={{ color: "oklch(0.62 0.20 32)" }}>
+              Cyber Risk Intel
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="font-bold text-sm tracking-wide text-foreground">CRISP</p>
-          <p className="text-[10px] tracking-widest uppercase" style={{ color: "oklch(0.62 0.20 32)" }}>
-            Cyber Risk Intel
-          </p>
-        </div>
+        {/* Close button — mobile only */}
+        {onClose && (
+          <button onClick={onClose} className="lg:hidden text-muted-foreground hover:text-foreground p-1">
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Section label */}
-      <div className="px-5 pt-5 pb-2">
+      <div className="px-5 pt-4 pb-2">
         <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground">Navigation</p>
       </div>
 
@@ -51,6 +70,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onClose}
               className={cn(
                 "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
                 active ? "text-primary" : "text-muted-foreground hover:text-foreground"
@@ -63,11 +83,11 @@ export function Sidebar() {
             >
               <div
                 className={cn(
-                  "flex items-center justify-center w-7 h-7 rounded-md transition-all",
+                  "flex items-center justify-center w-7 h-7 rounded-md transition-all flex-shrink-0",
                   active ? "bg-primary/15" : "bg-transparent group-hover:bg-secondary"
                 )}
               >
-                <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                <Icon className="w-3.5 h-3.5" />
               </div>
               {label}
               {active && <div className="ml-auto w-1 h-4 rounded-full bg-primary" />}

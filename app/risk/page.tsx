@@ -109,7 +109,7 @@ export default function RiskPage() {
       </div>
 
       {/* Risk KPIs */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KpiCard label="Total Risk Score" value={totalRisk.toFixed(2)} color="text-orange-400" />
         <KpiCard label="Est. ALE (€)" value={`€${ale.toLocaleString()}`} color="text-red-400" />
         <KpiCard label="Risk Reduction (€)" value={selectedControl ? `€${riskReductionValue.toLocaleString()}` : "—"} color="text-green-400" />
@@ -122,7 +122,7 @@ export default function RiskPage() {
 
       {/* Risk by Asset + Control Radar */}
       {(riskByAsset.length > 0 || radarData.length > 0) && (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Risk by Asset */}
           <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
             <CardHeader className="pb-2">
@@ -179,7 +179,7 @@ export default function RiskPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* ROSI panel */}
         <Card>
           <CardHeader className="flex-row items-center justify-between">

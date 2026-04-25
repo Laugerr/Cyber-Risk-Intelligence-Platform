@@ -219,7 +219,7 @@ export default function VulnerabilitiesPage() {
 
       {/* Stats */}
       {vulns.length > 0 && (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <StatCard label="KEV (Active Exploits)" value={kevCount} icon={<Flame className="w-4 h-4" />} highlight={kevCount > 0} />
           <StatCard label="Critical Severity" value={criticalCount} icon={<ShieldOff className="w-4 h-4" />} highlight={criticalCount > 0} />
           <StatCard label="Avg CVSS Score" value={avgCvss.toFixed(1)} icon={<BarChart2 className="w-4 h-4" />} highlight={avgCvss >= 7} />
@@ -331,7 +331,7 @@ function VulnCharts({ vulns, assetMap }: { vulns: Vulnerability[]; assetMap: Rec
     });
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {/* CVSS Distribution */}
       <div className="rounded-xl p-5" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
         <p className="text-sm font-semibold mb-4 flex items-center gap-2">

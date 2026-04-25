@@ -130,7 +130,7 @@ export default function AssetsPage() {
 
       {/* Stats row */}
       {assets.length > 0 && (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <StatCard label="Total Assets" value={assets.length} icon={<Server className="w-4 h-4" />} />
           <StatCard label="Internet Exposed" value={exposed} icon={<ShieldAlert className="w-4 h-4" />} highlight={exposed > 0} />
           <StatCard label="High / Critical" value={critical} icon={<ShieldCheck className="w-4 h-4" />} highlight={critical > 0} />
