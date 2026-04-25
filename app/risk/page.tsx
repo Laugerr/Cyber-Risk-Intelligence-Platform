@@ -144,7 +144,7 @@ export default function RiskPage() {
                     {riskByAsset.map((_, i) => (
                       <Cell key={i} fill={i === 0 ? "#ef4444" : i === 1 ? "#f97316" : "oklch(0.62 0.20 32)"} fillOpacity={1 - i * 0.07} />
                     ))}
-                    <LabelList dataKey="score" position="right" style={{ fontSize: 10, fill: "oklch(0.65 0 0)" }} formatter={(v: number) => v.toFixed(1)} />
+                    <LabelList dataKey="score" position="right" style={{ fontSize: 10, fill: "oklch(0.65 0 0)" }} formatter={(v: unknown) => Number(v).toFixed(1)} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
