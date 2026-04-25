@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Server, Bug, AlertTriangle, TrendingUp, Shield, RefreshCw,
-  ArrowUpRight, Activity, Zap, FlaskConical, PieChartIcon,
+  ArrowUpRight, Activity, Zap, FlaskConical, PieChartIcon, CheckCircle2,
 } from "lucide-react";
 import type { Asset, Vulnerability, Alert } from "@/lib/types";
 import { estimateAle } from "@/lib/rosi";
@@ -58,17 +58,29 @@ export default function DashboardPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const totalRisk = alerts.reduce((s, a) => s + (a.risk_score || 0), 0);
+  const activeAlerts = alerts.filter((a) => !a.acknowledged);
+  const totalRisk = activeAlerts.reduce((s, a) => s + (a.risk_score || 0), 0);
   const ale = estimateAle(totalRisk);
-  const criticalCount = alerts.filter((a) => a.severity === "CRITICAL").length;
+  const criticalCount = activeAlerts.filter((a) => a.severity === "CRITICAL").length;
   const exploitedVulns = vulns.filter((v) => v.known_exploited).length;
+  const resolvedVulns = vulns.filter((v) => v.status === "resolved").length;
+
+  async function acknowledgeAlert(id: number) {
+    await fetch(`/api/alerts/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ acknowledged: true }),
+    });
+    setAlerts((prev) => prev.map((a) => a.id === id ? { ...a, acknowledged: true } : a));
+    toast.success("Alert acknowledged");
+  }
 
   const sevData = SEV_ORDER.map((s) => ({
     name: s,
-    value: alerts.filter((a) => a.severity === s).length,
+    value: activeAlerts.filter((a) => a.severity === s).length,
   })).filter((d) => d.value > 0);
 
-  const topAlerts = [...alerts].sort((a, b) => b.risk_score - a.risk_score).slice(0, 8);
+  const topAlerts = [...activeAlerts].sort((a, b) => b.risk_score - a.risk_score).slice(0, 8);
   const trendData = topAlerts.map((a) => ({
     name: a.cve?.replace("CVE-", "") ?? "—",
     score: parseFloat(a.risk_score.toFixed(2)),
@@ -77,7 +89,7 @@ export default function DashboardPage() {
   // Risk score aggregated by asset
   const riskByAsset = assets
     .map((asset) => {
-      const score = alerts
+      const score = activeAlerts
         .filter((al) => al.asset_id === asset.id)
         .reduce((s, al) => s + al.risk_score, 0);
       return { name: asset.name.length > 14 ? asset.name.slice(0, 14) + "…" : asset.name, score: parseFloat(score.toFixed(2)) };
@@ -151,7 +163,7 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         <KpiCard loading={loading} icon={<Server className="w-4 h-4" />} label="Total Assets"
           value={assets.length} sub={`${assets.filter((a) => a.internet_exposed).length} internet exposed`}
           iconBg="bg-blue-500/10" iconColor="text-blue-400" />
@@ -159,11 +171,16 @@ export default function DashboardPage() {
           value={vulns.length} sub={`${exploitedVulns} actively exploited`}
           iconBg="bg-orange-500/10" iconColor="text-orange-400" trend={exploitedVulns > 0 ? "up" : undefined} />
         <KpiCard loading={loading} icon={<AlertTriangle className="w-4 h-4" />} label="Active Alerts"
-          value={alerts.length} sub={`${criticalCount} critical severity`}
+          value={activeAlerts.length} sub={`${criticalCount} critical severity`}
           iconBg="bg-red-500/10" iconColor="text-red-400" trend={criticalCount > 0 ? "up" : undefined} />
         <KpiCard loading={loading} icon={<TrendingUp className="w-4 h-4" />} label="Estimated ALE"
           value={`€${(ale / 1000).toFixed(0)}k`} sub="Annual Loss Expectancy"
           iconBg="bg-purple-500/10" iconColor="text-purple-400" />
+        {resolvedVulns > 0 && (
+          <KpiCard loading={loading} icon={<CheckCircle2 className="w-4 h-4" />} label="Resolved"
+            value={resolvedVulns} sub={`of ${vulns.length} vulnerabilities`}
+            iconBg="bg-green-500/10" iconColor="text-green-400" />
+        )}
       </div>
 
       {/* Severity breakdown bars */}
@@ -326,16 +343,18 @@ export default function DashboardPage() {
             <div className="px-6 space-y-3 pb-4">
               {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
             </div>
-          ) : alerts.length === 0 ? (
+          ) : activeAlerts.length === 0 ? (
             <div className="py-14 text-center">
               <Shield className="w-8 h-8 mx-auto mb-3 text-muted-foreground opacity-20" />
-              <p className="text-sm text-muted-foreground">No alerts — load demo data or add vulnerabilities.</p>
+              <p className="text-sm text-muted-foreground">
+                {alerts.length > 0 ? "All alerts acknowledged." : "No alerts — load demo data or add vulnerabilities."}
+              </p>
             </div>
           ) : (
-            alerts.slice(0, 10).map((a, i) => (
+            activeAlerts.slice(0, 10).map((a, i) => (
               <div key={a.id}
-                className="flex items-center justify-between px-6 py-3 hover:bg-white/[0.02] transition-colors"
-                style={{ borderBottom: i < Math.min(alerts.length, 10) - 1 ? "1px solid oklch(1 0 0 / 6%)" : "none" }}>
+                className="flex items-center justify-between px-6 py-3 hover:bg-white/[0.02] transition-colors group"
+                style={{ borderBottom: i < Math.min(activeAlerts.length, 10) - 1 ? "1px solid oklch(1 0 0 / 6%)" : "none" }}>
                 <div className="flex items-center gap-3 min-w-0">
                   <SevBadge severity={a.severity} />
                   <div className="min-w-0">
@@ -343,12 +362,21 @@ export default function DashboardPage() {
                     <p className="text-[11px] text-muted-foreground font-mono">{a.cve}</p>
                   </div>
                 </div>
-                <div className="ml-4 flex-shrink-0 text-right">
-                  <p className="text-sm font-bold font-mono"
-                    style={{ color: a.risk_score >= 12 ? "#ef4444" : a.risk_score >= 9 ? "#f97316" : "inherit" }}>
-                    {a.risk_score.toFixed(2)}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">risk score</p>
+                <div className="ml-4 flex-shrink-0 flex items-center gap-3">
+                  <div className="text-right">
+                    <p className="text-sm font-bold font-mono"
+                      style={{ color: a.risk_score >= 12 ? "#ef4444" : a.risk_score >= 9 ? "#f97316" : "inherit" }}>
+                      {a.risk_score.toFixed(2)}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">risk score</p>
+                  </div>
+                  <button
+                    onClick={() => acknowledgeAlert(a.id!)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md text-muted-foreground hover:text-green-400 hover:bg-green-500/10"
+                    title="Acknowledge alert"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             ))

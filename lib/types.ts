@@ -11,6 +11,8 @@ export interface Asset {
   created_at?: string;
 }
 
+export type VulnStatus = "open" | "in_progress" | "resolved";
+
 export interface Vulnerability {
   id?: number;
   asset_id: number;
@@ -19,6 +21,7 @@ export interface Vulnerability {
   cvss: number;
   known_exploited: boolean;
   epss_score?: number | null;
+  status?: VulnStatus;
   detected_at?: string;
 }
 
@@ -39,6 +42,7 @@ export interface Alert {
   cve?: string | null;
   risk_score: number;
   evidence: string;
+  acknowledged?: boolean;
   created_at?: string;
 }
 

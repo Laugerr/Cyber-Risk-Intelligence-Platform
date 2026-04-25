@@ -8,14 +8,21 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Bug, Search, Flame, ShieldOff, BarChart2 } from "lucide-react";
-import type { Asset, Vulnerability } from "@/lib/types";
+import { Plus, Trash2, Bug, Search, Flame, ShieldOff, BarChart2, CircleDot, Clock, CheckCircle2 } from "lucide-react";
+import type { Asset, Vulnerability, VulnStatus } from "@/lib/types";
 import { calculateRisk } from "@/lib/scoring";
 import { toast } from "sonner";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   ScatterChart, Scatter, ZAxis, Cell,
 } from "recharts";
+
+const STATUS_CONFIG: Record<VulnStatus, { label: string; color: string; icon: React.ReactNode }> = {
+  open: { label: "Open", color: "bg-red-500/15 text-red-400 border-red-500/30", icon: <CircleDot className="w-3 h-3" /> },
+  in_progress: { label: "In Progress", color: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30", icon: <Clock className="w-3 h-3" /> },
+  resolved: { label: "Resolved", color: "bg-green-500/15 text-green-400 border-green-500/30", icon: <CheckCircle2 className="w-3 h-3" /> },
+};
+const STATUS_CYCLE: Record<VulnStatus, VulnStatus> = { open: "in_progress", in_progress: "resolved", resolved: "open" };
 
 const SEV_COLORS: Record<string, string> = {
   CRITICAL: "#ef4444", HIGH: "#f97316", MEDIUM: "#eab308", LOW: "#22c55e",
@@ -44,6 +51,7 @@ export default function VulnerabilitiesPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<VulnStatus | "all">("all");
   const [nvdSearch, setNvdSearch] = useState("");
   const [nvdResults, setNvdResults] = useState<{ cve_id: string; description: string; cvss: number | null }[]>([]);
   const [nvdLoading, setNvdLoading] = useState(false);
@@ -113,9 +121,22 @@ export default function VulnerabilitiesPage() {
   }
 
   const assetMap = Object.fromEntries(assets.map((a) => [a.id!, a]));
-  const filtered = vulns.filter((v) =>
-    !search || v.cve.toLowerCase().includes(search.toLowerCase()) || v.title.toLowerCase().includes(search.toLowerCase())
-  );
+  async function cycleStatus(vuln: Vulnerability) {
+    const next = STATUS_CYCLE[vuln.status ?? "open"];
+    await fetch(`/api/vulnerabilities/${vuln.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: next }),
+    });
+    toast.success(`${vuln.cve} → ${STATUS_CONFIG[next].label}`);
+    setVulns((prev) => prev.map((v) => v.id === vuln.id ? { ...v, status: next } : v));
+  }
+
+  const filtered = vulns.filter((v) => {
+    const matchSearch = !search || v.cve.toLowerCase().includes(search.toLowerCase()) || v.title.toLowerCase().includes(search.toLowerCase());
+    const matchStatus = statusFilter === "all" || (v.status ?? "open") === statusFilter;
+    return matchSearch && matchStatus;
+  });
 
   const kevCount = vulns.filter((v) => v.known_exploited).length;
   const criticalCount = vulns.filter((v) => {
@@ -226,6 +247,31 @@ export default function VulnerabilitiesPage() {
         </div>
       )}
 
+      {/* Status filter pills */}
+      {vulns.length > 0 && (
+        <div className="flex items-center gap-2 flex-wrap">
+          {(["all", "open", "in_progress", "resolved"] as const).map((s) => {
+            const count = s === "all" ? vulns.length : vulns.filter((v) => (v.status ?? "open") === s).length;
+            const active = statusFilter === s;
+            return (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(s)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                  active
+                    ? "bg-primary/15 text-primary border-primary/30"
+                    : "text-muted-foreground border-transparent hover:border-border hover:text-foreground"
+                }`}
+              >
+                {s !== "all" && STATUS_CONFIG[s as VulnStatus].icon}
+                {s === "all" ? "All" : STATUS_CONFIG[s as VulnStatus].label}
+                <span className={`ml-0.5 px-1.5 py-0.5 rounded text-[10px] ${active ? "bg-primary/20" : "bg-secondary"}`}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Charts */}
       {vulns.length > 0 && (
         <VulnCharts vulns={vulns} assetMap={assetMap} />
@@ -258,6 +304,7 @@ export default function VulnerabilitiesPage() {
                   <th className="text-left px-5 py-3">EPSS</th>
                   <th className="text-left px-5 py-3">Risk Score</th>
                   <th className="text-left px-5 py-3">Severity</th>
+                  <th className="text-left px-5 py-3">Status</th>
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
@@ -285,6 +332,20 @@ export default function VulnerabilitiesPage() {
                       <td className="px-5 py-3.5 text-muted-foreground">{v.epss_score != null ? v.epss_score.toFixed(3) : "—"}</td>
                       <td className="px-5 py-3.5 font-mono font-semibold">{risk ? risk.risk_score.toFixed(2) : "—"}</td>
                       <td className="px-5 py-3.5">{risk ? <SevBadge severity={risk.severity} /> : "—"}</td>
+                      <td className="px-5 py-3.5">
+                        {(() => {
+                          const status = v.status ?? "open";
+                          const cfg = STATUS_CONFIG[status];
+                          return (
+                            <button
+                              onClick={() => cycleStatus(v)}
+                              className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-md border cursor-pointer hover:opacity-80 transition-opacity ${cfg.color}`}
+                            >
+                              {cfg.icon}{cfg.label}
+                            </button>
+                          );
+                        })()}
+                      </td>
                       <td className="px-5 py-3.5">
                         <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(v.id!)}>
                           <Trash2 className="w-3.5 h-3.5" />

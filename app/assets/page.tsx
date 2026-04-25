@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Server, Monitor, Cloud, Network, Globe, Database, Box, ShieldAlert, ShieldCheck } from "lucide-react";
+import { Plus, Trash2, Server, Monitor, Cloud, Network, Globe, Database, Box, ShieldAlert, ShieldCheck, ChevronRight } from "lucide-react";
 import type { Asset, AssetType } from "@/lib/types";
 import { toast } from "sonner";
+import Link from "next/link";
 
 const ASSET_TYPES: AssetType[] = ["Server", "Workstation", "Cloud", "Network", "WebApp", "Database", "Other"];
 
@@ -162,8 +163,13 @@ export default function AssetsPage() {
               </thead>
               <tbody>
                 {assets.map((a) => (
-                  <tr key={a.id} style={{ borderBottom: "1px solid oklch(1 0 0 / 5%)" }} className="last:border-0 hover:bg-white/[0.03] transition-colors">
-                    <td className="px-5 py-3.5 font-medium">{a.name}</td>
+                  <tr key={a.id} style={{ borderBottom: "1px solid oklch(1 0 0 / 5%)" }} className="last:border-0 hover:bg-white/[0.03] transition-colors group">
+                    <td className="px-5 py-3.5 font-medium">
+                      <Link href={`/assets/${a.id}`} className="hover:text-primary transition-colors flex items-center gap-1">
+                        {a.name}
+                        <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" />
+                      </Link>
+                    </td>
                     <td className="px-5 py-3.5">
                       <span className="inline-flex items-center gap-1.5 text-muted-foreground">
                         {TYPE_ICON[a.asset_type] ?? TYPE_ICON.Other}
