@@ -72,6 +72,7 @@ npm install
 # 3. Configure environment
 cp .env.local.example .env.local
 # Fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NVD_API_KEY
+# (The "Ask CRISP" AI Risk Analyst works out of the box — no API key required)
 
 # 4. Run database schema
 # Paste supabase-schema.sql into the Supabase SQL editor, then:
