@@ -24,6 +24,7 @@
 | 📄 **Executive Reports** | Download HTML report with KPIs, severity summary, top risks, and ROSI recommendation |
 | 🔔 **Alert Management** | Acknowledge alerts from the dashboard feed — ALE recalculates live |
 | 🤖 **Threat Intel Sync** | Daily Vercel cron jobs pull CISA KEV and FIRST EPSS scores automatically |
+| 🪄 **AI Risk Analyst** | "Ask CRISP" — an AI assistant grounded in your live assets, CVEs, alerts, and controls; answers "what should I fix first?", explains CVEs, and summarizes posture with streaming responses |
 
 ---
 
@@ -37,6 +38,7 @@
 | 🎨 UI | shadcn/ui · Tailwind CSS · Recharts |
 | 🔤 Fonts | Ubuntu / Ubuntu Mono |
 | 🛰️ Threat Intel | CISA KEV · FIRST EPSS · NVD API |
+| 🪄 AI | Streaming AI assistant |
 
 ---
 

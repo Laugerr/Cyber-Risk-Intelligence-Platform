@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
+import { AskCrisp } from "@/components/ask-crisp";
 
 export function LayoutClient({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -30,6 +31,8 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </main>
+
+      <AskCrisp />
     </>
   );
 }
