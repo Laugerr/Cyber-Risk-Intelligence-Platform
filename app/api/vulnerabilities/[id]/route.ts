@@ -15,7 +15,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (!["open", "in_progress", "resolved"].includes(status)) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
-  const { error } = await supabase.from("vulnerabilities").update({ status }).eq("id", Number(id));
+  // Stamp the remediation time when resolved; clear it if reopened (powers MTTR).
+  const update: { status: string; resolved_at?: string | null } = { status };
+  update.resolved_at = status === "resolved" ? new Date().toISOString() : null;
+  const { error } = await supabase.from("vulnerabilities").update(update).eq("id", Number(id));
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });
 }

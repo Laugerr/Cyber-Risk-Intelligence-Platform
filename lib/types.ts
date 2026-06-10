@@ -23,6 +23,24 @@ export interface Vulnerability {
   epss_score?: number | null;
   status?: VulnStatus;
   detected_at?: string;
+  resolved_at?: string | null;
+}
+
+export interface RiskSnapshot {
+  id?: number;
+  captured_on: string; // YYYY-MM-DD
+  total_risk: number;
+  ale: number;
+  asset_count: number;
+  vuln_count: number;
+  open_count: number;
+  in_progress_count: number;
+  resolved_count: number;
+  exploited_count: number;
+  critical_count: number;
+  high_count: number;
+  active_alerts: number;
+  mttr_days: number | null;
 }
 
 export interface Control {

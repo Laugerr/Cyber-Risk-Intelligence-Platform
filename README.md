@@ -17,6 +17,7 @@
 | 🖥️ **Asset Inventory** | Register servers, workstations, cloud, databases with criticality and exposure tagging |
 | 🐛 **Vulnerability Tracking** | Link CVEs to assets, search NVD live, auto-generate risk alerts on save |
 | 🔄 **Remediation Workflow** | Triage CVEs through Open → In Progress → Resolved with filter pills |
+| 📉 **Risk Trends & MTTR** | Daily snapshots build a historical record — risk-over-time, vulnerability burndown, KEV exposure, and mean-time-to-remediate |
 | 🔍 **Asset Drill-down** | Per-asset detail page with charts, progress bar, and inline status management |
 | 📊 **Risk Scoring** | `CVSS × criticality × exposure` engine enriched with KEV and EPSS bonuses |
 | 💰 **ROSI Modeling** | ALE estimation, security control evaluation, projected savings vs cost |
@@ -75,9 +76,9 @@ cp .env.local.example .env.local
 # (The "Ask CRISP" AI Risk Analyst works out of the box — no API key required)
 
 # 4. Run database schema
-# Paste supabase-schema.sql into the Supabase SQL editor, then:
-# ALTER TABLE vulnerabilities ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'open';
-# ALTER TABLE alerts ADD COLUMN IF NOT EXISTS acknowledged BOOLEAN DEFAULT false;
+# Paste supabase-schema.sql into the Supabase SQL editor and run it.
+# It's idempotent (CREATE IF NOT EXISTS / ADD COLUMN IF NOT EXISTS), so it's safe
+# to re-run on an existing database to pick up the risk_snapshots table and new columns.
 
 # 5. Start dev server
 npm run dev
@@ -96,13 +97,16 @@ app/
     page.tsx                # 🖥️  Asset inventory table
     [id]/page.tsx           # 🔍 Asset detail — drill-down with charts & remediation
   vulnerabilities/page.tsx  # 🐛 CVE tracking with status workflow
+  trends/page.tsx           # 📉 Risk trends, burndown & MTTR
   risk/page.tsx             # 📈 Risk quantification & ROSI modeling
   reports/page.tsx          # 📄 Executive report preview & HTML export
   api/
+    ai/                     # 🪄 Ask CRISP — streaming AI analyst endpoint
     assets/                 # CRUD + single asset detail
     vulnerabilities/        # CRUD + status PATCH + alert generation
     alerts/                 # Feed + acknowledge PATCH
     controls/               # Security controls CRUD
+    snapshot/               # Daily risk snapshot capture + history backfill
     seed/                   # Demo data loader
     sync/kev/               # CISA KEV sync (GET for cron, POST for manual)
     sync/epss/              # FIRST EPSS sync (GET for cron, POST for manual)
@@ -110,6 +114,7 @@ app/
 lib/
   scoring.ts                # ⚙️  Risk scoring engine
   rosi.ts                   # 💰 ROSI / ALE financial model
+  analyst.ts                # 🪄 Local data-grounded AI analyst engine
   types.ts                  # 📝 TypeScript interfaces
 components/
   layout-client.tsx         # 📱 Responsive layout wrapper + sidebar state
@@ -127,6 +132,7 @@ Defined in `vercel.json` — runs automatically on Vercel's infrastructure:
 |---|---|---|
 | Daily 03:00 UTC | `/api/sync/kev` | 🔴 Pull CISA KEV feed, flag exploited CVEs |
 | Daily 03:30 UTC | `/api/sync/epss` | 📊 Pull FIRST EPSS scores for all tracked CVEs |
+| Daily 04:00 UTC | `/api/snapshot` | 📉 Capture a daily risk snapshot for the Trends page |
 
 ---
 
@@ -149,6 +155,7 @@ Defined in `vercel.json` — runs automatically on Vercel's infrastructure:
 | `/assets` | Asset inventory with type icons, criticality bars, click-to-drill |
 | `/assets/[id]` | Asset detail — severity donut, CVSS chart, remediation progress, CVE table |
 | `/vulnerabilities` | CVE table with CVSS/EPSS scatter, distribution chart, status filter |
+| `/trends` | Historical risk-over-time, vulnerability burndown, KEV exposure, and MTTR |
 | `/risk` | Risk by asset, control radar chart, ALE before/after, ROSI evaluation |
 | `/reports` | Executive report preview + one-click HTML download |
 

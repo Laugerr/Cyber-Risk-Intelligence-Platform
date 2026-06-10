@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Activity, X } from "lucide-react";
+import { Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Activity, LineChart, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/assets", label: "Assets", icon: Server },
   { href: "/vulnerabilities", label: "Vulnerabilities", icon: Bug },
+  { href: "/trends", label: "Risk Trends", icon: LineChart },
   { href: "/risk", label: "Risk & ROSI", icon: TrendingUp },
   { href: "/reports", label: "Reports", icon: FileText },
 ];
