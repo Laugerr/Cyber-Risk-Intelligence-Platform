@@ -64,6 +64,15 @@ export interface Alert {
   created_at?: string;
 }
 
+export interface ComplianceStatus {
+  id?: number;
+  framework: string;
+  requirement_id: string;
+  status: "met" | "partial" | "gap" | "na";
+  note?: string;
+  updated_at?: string;
+}
+
 export interface RiskResult {
   risk_score: number;
   severity: Severity;

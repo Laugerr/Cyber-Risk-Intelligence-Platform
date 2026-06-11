@@ -65,15 +65,28 @@ create table if not exists risk_snapshots (
   created_at timestamptz not null default now()
 );
 
+-- Compliance framework mapping — per-requirement status (NIST CSF / CIS / ISO 27001)
+create table if not exists compliance_status (
+  id bigserial primary key,
+  framework text not null,
+  requirement_id text not null,
+  status text not null default 'gap' check (status in ('met', 'partial', 'gap', 'na')),
+  note text not null default '',
+  updated_at timestamptz not null default now(),
+  unique (framework, requirement_id)
+);
+
 -- Enable Row Level Security (RLS) and allow public access for demo
 alter table assets enable row level security;
 alter table vulnerabilities enable row level security;
 alter table controls enable row level security;
 alter table alerts enable row level security;
 alter table risk_snapshots enable row level security;
+alter table compliance_status enable row level security;
 
 create policy "public_all" on assets for all using (true) with check (true);
 create policy "public_all" on vulnerabilities for all using (true) with check (true);
 create policy "public_all" on controls for all using (true) with check (true);
 create policy "public_all" on alerts for all using (true) with check (true);
 create policy "public_all" on risk_snapshots for all using (true) with check (true);
+create policy "public_all" on compliance_status for all using (true) with check (true);
