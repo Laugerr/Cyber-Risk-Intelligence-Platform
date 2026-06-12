@@ -17,6 +17,7 @@
 | 🖥️ **Asset Inventory** | Register servers, workstations, cloud, databases with criticality and exposure tagging |
 | 🐛 **Vulnerability Tracking** | Link CVEs to assets, search NVD live, auto-generate risk alerts on save |
 | 🔄 **Remediation Workflow** | Triage CVEs through Open → In Progress → Resolved with filter pills |
+| ⏱️ **SLA Policy Engine** | Per-severity remediation deadlines, automatic due dates, breach detection, and an SLA-compliance metric with a prioritized overdue queue |
 | 📉 **Risk Trends & MTTR** | Daily snapshots build a historical record — risk-over-time, vulnerability burndown, KEV exposure, and mean-time-to-remediate |
 | ✅ **Compliance Mapping** | Map controls to **NIST CSF 2.0**, **CIS Controls v8**, and **ISO 27001:2022** — one-click auto-assessment, coverage % per framework and category, editable Met/Partial/Gap/N-A status |
 | 🔍 **Asset Drill-down** | Per-asset detail page with charts, progress bar, and inline status management |
@@ -99,6 +100,7 @@ app/
     [id]/page.tsx           # 🔍 Asset detail — drill-down with charts & remediation
   vulnerabilities/page.tsx  # 🐛 CVE tracking with status workflow
   trends/page.tsx           # 📉 Risk trends, burndown & MTTR
+  sla/page.tsx              # ⏱️  SLA policy, breach tracking & remediation queue
   compliance/page.tsx       # ✅ NIST CSF / CIS / ISO 27001 coverage mapping
   risk/page.tsx             # 📈 Risk quantification & ROSI modeling
   reports/page.tsx          # 📄 Executive report preview & HTML export
@@ -109,6 +111,7 @@ app/
     alerts/                 # Feed + acknowledge PATCH
     controls/               # Security controls CRUD
     snapshot/               # Daily risk snapshot capture + history backfill
+    sla/                    # SLA policy + computed remediation deadlines/breaches
     compliance/             # Framework coverage status + auto-assessment
     seed/                   # Demo data loader
     sync/kev/               # CISA KEV sync (GET for cron, POST for manual)

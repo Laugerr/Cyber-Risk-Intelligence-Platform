@@ -76,6 +76,15 @@ create table if not exists compliance_status (
   unique (framework, requirement_id)
 );
 
+-- SLA / remediation policy — days-to-remediate per severity
+create table if not exists sla_policy (
+  severity text primary key check (severity in ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL')),
+  days integer not null default 30 check (days > 0)
+);
+insert into sla_policy (severity, days) values
+  ('CRITICAL', 7), ('HIGH', 30), ('MEDIUM', 90), ('LOW', 180)
+on conflict (severity) do nothing;
+
 -- Enable Row Level Security (RLS) and allow public access for demo
 alter table assets enable row level security;
 alter table vulnerabilities enable row level security;
@@ -83,6 +92,7 @@ alter table controls enable row level security;
 alter table alerts enable row level security;
 alter table risk_snapshots enable row level security;
 alter table compliance_status enable row level security;
+alter table sla_policy enable row level security;
 
 create policy "public_all" on assets for all using (true) with check (true);
 create policy "public_all" on vulnerabilities for all using (true) with check (true);
@@ -90,3 +100,4 @@ create policy "public_all" on controls for all using (true) with check (true);
 create policy "public_all" on alerts for all using (true) with check (true);
 create policy "public_all" on risk_snapshots for all using (true) with check (true);
 create policy "public_all" on compliance_status for all using (true) with check (true);
+create policy "public_all" on sla_policy for all using (true) with check (true);

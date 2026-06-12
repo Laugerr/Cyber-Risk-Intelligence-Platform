@@ -64,6 +64,27 @@ export interface Alert {
   created_at?: string;
 }
 
+export interface SlaPolicy {
+  severity: Severity;
+  days: number;
+}
+
+export type SlaState = "on_track" | "due_soon" | "breached" | "met" | "missed";
+
+export interface RemediationItem {
+  id: number;
+  cve: string;
+  title: string;
+  asset_name: string;
+  severity: Severity;
+  status: VulnStatus;
+  detected_at: string;
+  resolved_at?: string | null;
+  due_date: string;
+  days_remaining: number; // negative = overdue
+  sla_state: SlaState;
+}
+
 export interface ComplianceStatus {
   id?: number;
   framework: string;
