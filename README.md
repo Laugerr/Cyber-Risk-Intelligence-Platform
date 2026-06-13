@@ -22,6 +22,7 @@
 | ✅ **Compliance Mapping** | Map controls to **NIST CSF 2.0**, **CIS Controls v8**, and **ISO 27001:2022** — one-click auto-assessment, coverage % per framework and category, editable Met/Partial/Gap/N-A status |
 | 🔍 **Asset Drill-down** | Per-asset detail page with charts, progress bar, and inline status management |
 | 📊 **Risk Scoring** | `CVSS × criticality × exposure` engine enriched with KEV and EPSS bonuses |
+| 🎯 **Smart Prioritization (SSVC)** | CISA's Stakeholder-Specific Vulnerability Categorization — derives exploitation/exposure/automatability/impact into an Act / Attend / Track* / Track decision and a "fix these first" queue |
 | 💰 **ROSI Modeling** | ALE estimation, security control evaluation, projected savings vs cost |
 | 📈 **Rich Visualizations** | Area, donut, horizontal bar, scatter (CVSS vs EPSS), and radar charts |
 | 📄 **Executive Reports** | Download HTML report with KPIs, severity summary, top risks, and ROSI recommendation |
@@ -99,6 +100,7 @@ app/
     page.tsx                # 🖥️  Asset inventory table
     [id]/page.tsx           # 🔍 Asset detail — drill-down with charts & remediation
   vulnerabilities/page.tsx  # 🐛 CVE tracking with status workflow
+  prioritize/page.tsx       # 🎯 SSVC smart prioritization queue
   trends/page.tsx           # 📉 Risk trends, burndown & MTTR
   sla/page.tsx              # ⏱️  SLA policy, breach tracking & remediation queue
   compliance/page.tsx       # ✅ NIST CSF / CIS / ISO 27001 coverage mapping
@@ -106,6 +108,7 @@ app/
   reports/page.tsx          # 📄 Executive report preview & HTML export
   api/
     ai/                     # 🪄 Ask CRISP — streaming AI analyst endpoint
+    prioritize/             # 🎯 SSVC assessment + prioritized queue
     assets/                 # CRUD + single asset detail
     vulnerabilities/        # CRUD + status PATCH + alert generation
     alerts/                 # Feed + acknowledge PATCH
