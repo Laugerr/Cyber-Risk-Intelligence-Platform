@@ -76,6 +76,17 @@ create table if not exists compliance_status (
   unique (framework, requirement_id)
 );
 
+-- Software inventory per asset — powers automatic CVE→asset matching (CPE)
+create table if not exists asset_software (
+  id bigserial primary key,
+  asset_id bigint not null references assets(id) on delete cascade,
+  vendor text not null default '',
+  product text not null,
+  version text not null default '',
+  cpe text not null default '',
+  created_at timestamptz not null default now()
+);
+
 -- SLA / remediation policy — days-to-remediate per severity
 create table if not exists sla_policy (
   severity text primary key check (severity in ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL')),
@@ -93,6 +104,7 @@ alter table alerts enable row level security;
 alter table risk_snapshots enable row level security;
 alter table compliance_status enable row level security;
 alter table sla_policy enable row level security;
+alter table asset_software enable row level security;
 
 create policy "public_all" on assets for all using (true) with check (true);
 create policy "public_all" on vulnerabilities for all using (true) with check (true);
@@ -101,3 +113,4 @@ create policy "public_all" on alerts for all using (true) with check (true);
 create policy "public_all" on risk_snapshots for all using (true) with check (true);
 create policy "public_all" on compliance_status for all using (true) with check (true);
 create policy "public_all" on sla_policy for all using (true) with check (true);
+create policy "public_all" on asset_software for all using (true) with check (true);

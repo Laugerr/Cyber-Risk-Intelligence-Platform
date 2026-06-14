@@ -43,6 +43,16 @@ export interface RiskSnapshot {
   mttr_days: number | null;
 }
 
+export interface AssetSoftware {
+  id?: number;
+  asset_id: number;
+  vendor: string;
+  product: string;
+  version: string;
+  cpe: string;
+  created_at?: string;
+}
+
 export interface Control {
   id?: number;
   name: string;

@@ -16,6 +16,7 @@
 |---|---|
 | 🖥️ **Asset Inventory** | Register servers, workstations, cloud, databases with criticality and exposure tagging |
 | 🐛 **Vulnerability Tracking** | Link CVEs to assets, search NVD live, auto-generate risk alerts on save |
+| 🧩 **Auto CVE→Asset Matching** | Track software inventory (CPE) per asset; a CVE advisory feed auto-links to every affected asset and generates vulnerabilities + alerts — no manual entry |
 | 🔄 **Remediation Workflow** | Triage CVEs through Open → In Progress → Resolved with filter pills |
 | ⏱️ **SLA Policy Engine** | Per-severity remediation deadlines, automatic due dates, breach detection, and an SLA-compliance metric with a prioritized overdue queue |
 | 📉 **Risk Trends & MTTR** | Daily snapshots build a historical record — risk-over-time, vulnerability burndown, KEV exposure, and mean-time-to-remediate |
@@ -99,6 +100,7 @@ app/
   assets/
     page.tsx                # 🖥️  Asset inventory table
     [id]/page.tsx           # 🔍 Asset detail — drill-down with charts & remediation
+  inventory/page.tsx        # 🧩 Software inventory + CVE auto-matching
   vulnerabilities/page.tsx  # 🐛 CVE tracking with status workflow
   prioritize/page.tsx       # 🎯 SSVC smart prioritization queue
   trends/page.tsx           # 📉 Risk trends, burndown & MTTR
@@ -109,6 +111,7 @@ app/
   api/
     ai/                     # 🪄 Ask CRISP — streaming AI analyst endpoint
     prioritize/             # 🎯 SSVC assessment + prioritized queue
+    inventory/              # 🧩 Software inventory + CVE auto-match engine
     assets/                 # CRUD + single asset detail
     vulnerabilities/        # CRUD + status PATCH + alert generation
     alerts/                 # Feed + acknowledge PATCH
@@ -125,6 +128,8 @@ lib/
   rosi.ts                   # 💰 ROSI / ALE financial model
   analyst.ts                # 🪄 Local data-grounded AI analyst engine
   frameworks.ts             # ✅ NIST CSF / CIS / ISO 27001 catalogs + mapping
+  ssvc.ts                   # 🎯 SSVC decision model
+  cve-feed.ts               # 🧩 CVE advisory feed + software match engine
   types.ts                  # 📝 TypeScript interfaces
 components/
   layout-client.tsx         # 📱 Responsive layout wrapper + sidebar state
