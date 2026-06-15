@@ -1,14 +1,24 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Menu } from "lucide-react";
+import {
+  Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Menu,
+  LineChart, ShieldCheck, Timer, Crosshair, Boxes, BellRing,
+} from "lucide-react";
+import { NotificationBell } from "@/components/notification-bell";
 
 const PAGES: Record<string, { label: string; icon: React.ReactNode; desc: string }> = {
   "/": { label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" />, desc: "Real-time cyber risk overview" },
   "/assets": { label: "Assets", icon: <Server className="w-4 h-4" />, desc: "Manage your asset inventory" },
+  "/inventory": { label: "Software Inventory", icon: <Boxes className="w-4 h-4" />, desc: "Track software and auto-match CVEs" },
   "/vulnerabilities": { label: "Vulnerabilities", icon: <Bug className="w-4 h-4" />, desc: "Track and triage CVEs" },
+  "/prioritize": { label: "Smart Prioritization", icon: <Crosshair className="w-4 h-4" />, desc: "SSVC decision-based triage" },
+  "/trends": { label: "Risk Trends", icon: <LineChart className="w-4 h-4" />, desc: "Historical posture and MTTR" },
+  "/sla": { label: "SLA & Remediation", icon: <Timer className="w-4 h-4" />, desc: "Deadlines and breach tracking" },
+  "/compliance": { label: "Compliance", icon: <ShieldCheck className="w-4 h-4" />, desc: "Framework coverage mapping" },
   "/risk": { label: "Risk & ROSI", icon: <TrendingUp className="w-4 h-4" />, desc: "Quantify risk and model security investment" },
   "/reports": { label: "Reports", icon: <FileText className="w-4 h-4" />, desc: "Generate executive risk reports" },
+  "/notifications": { label: "Notifications", icon: <BellRing className="w-4 h-4" />, desc: "Alert feed and integrations" },
 };
 
 interface HeaderProps {
@@ -45,7 +55,8 @@ export function Header({ onMenuClick }: HeaderProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <NotificationBell />
         <div
           className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg"
           style={{ background: "oklch(0.62 0.20 32 / 8%)", border: "1px solid oklch(0.62 0.20 32 / 15%)" }}

@@ -28,6 +28,7 @@
 | 📈 **Rich Visualizations** | Area, donut, horizontal bar, scatter (CVSS vs EPSS), and radar charts |
 | 📄 **Executive Reports** | Download HTML report with KPIs, severity summary, top risks, and ROSI recommendation |
 | 🔔 **Alert Management** | Acknowledge alerts from the dashboard feed — ALE recalculates live |
+| 📣 **Notifications & Integrations** | In-app notification center (bell) plus Slack/webhook push on new KEV CVEs, critical alerts, and SLA breaches — configurable, deduped, with a daily scan |
 | 🤖 **Threat Intel Sync** | Daily Vercel cron jobs pull CISA KEV and FIRST EPSS scores automatically |
 | 🪄 **AI Risk Analyst** | "Ask CRISP" — an AI assistant grounded in your live assets, CVEs, alerts, and controls; answers "what should I fix first?", explains CVEs, and summarizes posture with streaming responses |
 
@@ -107,6 +108,7 @@ app/
   sla/page.tsx              # ⏱️  SLA policy, breach tracking & remediation queue
   compliance/page.tsx       # ✅ NIST CSF / CIS / ISO 27001 coverage mapping
   risk/page.tsx             # 📈 Risk quantification & ROSI modeling
+  notifications/page.tsx    # 📣 Notification feed + webhook integration settings
   reports/page.tsx          # 📄 Executive report preview & HTML export
   api/
     ai/                     # 🪄 Ask CRISP — streaming AI analyst endpoint
@@ -117,6 +119,7 @@ app/
     alerts/                 # Feed + acknowledge PATCH
     controls/               # Security controls CRUD
     snapshot/               # Daily risk snapshot capture + history backfill
+    notifications/          # Feed CRUD + settings + scan engine (webhook push)
     sla/                    # SLA policy + computed remediation deadlines/breaches
     compliance/             # Framework coverage status + auto-assessment
     seed/                   # Demo data loader
@@ -148,6 +151,7 @@ Defined in `vercel.json` — runs automatically on Vercel's infrastructure:
 | Daily 03:00 UTC | `/api/sync/kev` | 🔴 Pull CISA KEV feed, flag exploited CVEs |
 | Daily 03:30 UTC | `/api/sync/epss` | 📊 Pull FIRST EPSS scores for all tracked CVEs |
 | Daily 04:00 UTC | `/api/snapshot` | 📉 Capture a daily risk snapshot for the Trends page |
+| Daily 04:30 UTC | `/api/notifications/scan` | 📣 Scan for new KEV/critical/SLA events and notify |
 
 ---
 

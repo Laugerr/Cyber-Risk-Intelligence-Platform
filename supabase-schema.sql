@@ -76,6 +76,29 @@ create table if not exists compliance_status (
   unique (framework, requirement_id)
 );
 
+-- Notifications — in-app alert feed (KEV / Critical / SLA breach events)
+create table if not exists notifications (
+  id bigserial primary key,
+  dedupe_key text not null unique,
+  type text not null default 'info',
+  severity text not null default 'INFO',
+  title text not null,
+  body text not null default '',
+  read boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+-- Single-row notification / integration settings
+create table if not exists notification_settings (
+  id integer primary key default 1 check (id = 1),
+  enabled boolean not null default true,
+  webhook_url text not null default '',
+  notify_kev boolean not null default true,
+  notify_critical boolean not null default true,
+  notify_sla boolean not null default true
+);
+insert into notification_settings (id) values (1) on conflict (id) do nothing;
+
 -- Software inventory per asset — powers automatic CVE→asset matching (CPE)
 create table if not exists asset_software (
   id bigserial primary key,
@@ -105,6 +128,8 @@ alter table risk_snapshots enable row level security;
 alter table compliance_status enable row level security;
 alter table sla_policy enable row level security;
 alter table asset_software enable row level security;
+alter table notifications enable row level security;
+alter table notification_settings enable row level security;
 
 create policy "public_all" on assets for all using (true) with check (true);
 create policy "public_all" on vulnerabilities for all using (true) with check (true);
@@ -114,3 +139,5 @@ create policy "public_all" on risk_snapshots for all using (true) with check (tr
 create policy "public_all" on compliance_status for all using (true) with check (true);
 create policy "public_all" on sla_policy for all using (true) with check (true);
 create policy "public_all" on asset_software for all using (true) with check (true);
+create policy "public_all" on notifications for all using (true) with check (true);
+create policy "public_all" on notification_settings for all using (true) with check (true);

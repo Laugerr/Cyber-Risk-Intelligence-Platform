@@ -104,6 +104,28 @@ export interface ComplianceStatus {
   updated_at?: string;
 }
 
+export type NotificationType = "kev" | "critical" | "sla_breach" | "info";
+
+export interface Notification {
+  id?: number;
+  dedupe_key: string;
+  type: NotificationType;
+  severity: string;
+  title: string;
+  body: string;
+  read?: boolean;
+  created_at?: string;
+}
+
+export interface NotificationSettings {
+  id?: number;
+  enabled: boolean;
+  webhook_url: string;
+  notify_kev: boolean;
+  notify_critical: boolean;
+  notify_sla: boolean;
+}
+
 export interface RiskResult {
   risk_score: number;
   severity: Severity;
