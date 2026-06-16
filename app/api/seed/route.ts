@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { makeCpe } from "@/lib/cve-feed";
+import { logAudit } from "@/lib/audit";
 
 const ASSETS = [
   { name: "prod-web-01", asset_type: "WebApp", owner: "Platform Team", criticality: 5, internet_exposed: true },
@@ -139,6 +140,7 @@ export async function POST() {
     // Insert controls
     await supabase.from("controls").insert(CONTROLS);
 
+    await logAudit({ action: "seed", entity: "system", entity_ref: "demo data", summary: `Demo data loaded — ${ASSETS.length} assets, ${VULNS.length} CVEs, ${softwareRows.length} software, ${CONTROLS.length} controls` });
     return NextResponse.json({ success: true, assets: ASSETS.length, vulns: VULNS.length, controls: CONTROLS.length, software: softwareRows.length });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });

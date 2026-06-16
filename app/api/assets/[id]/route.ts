@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { logAudit } from "@/lib/audit";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,7 +16,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const { data: asset } = await supabase.from("assets").select("name").eq("id", Number(id)).single();
   const { error } = await supabase.from("assets").delete().eq("id", Number(id));
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  await logAudit({ action: "delete", entity: "asset", entity_ref: asset?.name ?? `#${id}`, summary: `Asset "${asset?.name ?? id}" deleted (and its CVEs/alerts)` });
   return NextResponse.json({ success: true });
 }

@@ -29,6 +29,7 @@
 | 📄 **Executive Reports** | Download HTML report with KPIs, severity summary, top risks, and ROSI recommendation |
 | 🔔 **Alert Management** | Acknowledge alerts from the dashboard feed — ALE recalculates live |
 | 📣 **Notifications & Integrations** | In-app notification center (bell) plus Slack/webhook push on new KEV CVEs, critical alerts, and SLA breaches — configurable, deduped, with a daily scan |
+| 🗃️ **CSV Import/Export & Audit Log** | Export any dataset to CSV, bulk-import assets/software from CSV, and a full audit trail logging every create/update/delete across the platform |
 | 🤖 **Threat Intel Sync** | Daily Vercel cron jobs pull CISA KEV and FIRST EPSS scores automatically |
 | 🪄 **AI Risk Analyst** | "Ask CRISP" — an AI assistant grounded in your live assets, CVEs, alerts, and controls; answers "what should I fix first?", explains CVEs, and summarizes posture with streaming responses |
 
@@ -109,6 +110,7 @@ app/
   compliance/page.tsx       # ✅ NIST CSF / CIS / ISO 27001 coverage mapping
   risk/page.tsx             # 📈 Risk quantification & ROSI modeling
   notifications/page.tsx    # 📣 Notification feed + webhook integration settings
+  data/page.tsx             # 🗃️  CSV import/export + audit log
   reports/page.tsx          # 📄 Executive report preview & HTML export
   api/
     ai/                     # 🪄 Ask CRISP — streaming AI analyst endpoint
@@ -120,6 +122,8 @@ app/
     controls/               # Security controls CRUD
     snapshot/               # Daily risk snapshot capture + history backfill
     notifications/          # Feed CRUD + settings + scan engine (webhook push)
+    audit/                  # Audit log feed + clear
+    import/                 # Bulk CSV import (assets / software)
     sla/                    # SLA policy + computed remediation deadlines/breaches
     compliance/             # Framework coverage status + auto-assessment
     seed/                   # Demo data loader
@@ -133,6 +137,9 @@ lib/
   frameworks.ts             # ✅ NIST CSF / CIS / ISO 27001 catalogs + mapping
   ssvc.ts                   # 🎯 SSVC decision model
   cve-feed.ts               # 🧩 CVE advisory feed + software match engine
+  sla.ts                    # ⏱️  Shared SLA deadline computation
+  audit.ts                  # 🗃️  Audit log writer
+  csv.ts                    # 🗃️  CSV parse / serialize helpers
   types.ts                  # 📝 TypeScript interfaces
 components/
   layout-client.tsx         # 📱 Responsive layout wrapper + sidebar state

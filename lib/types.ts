@@ -104,6 +104,16 @@ export interface ComplianceStatus {
   updated_at?: string;
 }
 
+export interface AuditLog {
+  id?: number;
+  action: string;
+  entity: string;
+  entity_ref: string;
+  summary: string;
+  actor: string;
+  created_at?: string;
+}
+
 export type NotificationType = "kev" | "critical" | "sla_breach" | "info";
 
 export interface Notification {

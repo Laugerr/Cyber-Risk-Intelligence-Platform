@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { logAudit } from "@/lib/audit";
 import type { Asset } from "@/lib/types";
 
 export async function GET() {
@@ -25,5 +26,6 @@ export async function POST(req: Request) {
     .select()
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  await logAudit({ action: "create", entity: "asset", entity_ref: data.name, summary: `Asset "${data.name}" added (${data.asset_type}, criticality ${data.criticality}/5)` });
   return NextResponse.json(data, { status: 201 });
 }

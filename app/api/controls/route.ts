@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { logAudit } from "@/lib/audit";
 import type { Control } from "@/lib/types";
 
 export async function GET() {
@@ -24,5 +25,6 @@ export async function POST(req: Request) {
     .select()
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  await logAudit({ action: "create", entity: "control", entity_ref: data.name, summary: `Control "${data.name}" added (€${data.annual_cost_eur}/yr, ${data.effectiveness_pct}% effective)` });
   return NextResponse.json(data, { status: 201 });
 }

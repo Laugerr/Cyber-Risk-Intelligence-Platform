@@ -76,6 +76,17 @@ create table if not exists compliance_status (
   unique (framework, requirement_id)
 );
 
+-- Audit log — records every change across the platform
+create table if not exists audit_log (
+  id bigserial primary key,
+  action text not null,
+  entity text not null,
+  entity_ref text not null default '',
+  summary text not null,
+  actor text not null default 'analyst',
+  created_at timestamptz not null default now()
+);
+
 -- Notifications — in-app alert feed (KEV / Critical / SLA breach events)
 create table if not exists notifications (
   id bigserial primary key,
@@ -130,14 +141,28 @@ alter table sla_policy enable row level security;
 alter table asset_software enable row level security;
 alter table notifications enable row level security;
 alter table notification_settings enable row level security;
+alter table audit_log enable row level security;
 
+-- Drop-then-create so the whole file is safe to re-run (no "policy already exists")
+drop policy if exists "public_all" on assets;
 create policy "public_all" on assets for all using (true) with check (true);
+drop policy if exists "public_all" on vulnerabilities;
 create policy "public_all" on vulnerabilities for all using (true) with check (true);
+drop policy if exists "public_all" on controls;
 create policy "public_all" on controls for all using (true) with check (true);
+drop policy if exists "public_all" on alerts;
 create policy "public_all" on alerts for all using (true) with check (true);
+drop policy if exists "public_all" on risk_snapshots;
 create policy "public_all" on risk_snapshots for all using (true) with check (true);
+drop policy if exists "public_all" on compliance_status;
 create policy "public_all" on compliance_status for all using (true) with check (true);
+drop policy if exists "public_all" on sla_policy;
 create policy "public_all" on sla_policy for all using (true) with check (true);
+drop policy if exists "public_all" on asset_software;
 create policy "public_all" on asset_software for all using (true) with check (true);
+drop policy if exists "public_all" on notifications;
 create policy "public_all" on notifications for all using (true) with check (true);
+drop policy if exists "public_all" on notification_settings;
 create policy "public_all" on notification_settings for all using (true) with check (true);
+drop policy if exists "public_all" on audit_log;
+create policy "public_all" on audit_log for all using (true) with check (true);

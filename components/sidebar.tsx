@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Activity, LineChart, ShieldCheck, Timer, Crosshair, Boxes, Bell, X } from "lucide-react";
+import { Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Activity, LineChart, ShieldCheck, Timer, Crosshair, Boxes, Bell, Database, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -17,6 +17,7 @@ const navItems = [
   { href: "/risk", label: "Risk & ROSI", icon: TrendingUp },
   { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/reports", label: "Reports", icon: FileText },
+  { href: "/data", label: "Data & Audit", icon: Database },
 ];
 
 interface SidebarProps {

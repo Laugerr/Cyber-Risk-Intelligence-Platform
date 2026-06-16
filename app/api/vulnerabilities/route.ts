@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { calculateRisk } from "@/lib/scoring";
+import { logAudit } from "@/lib/audit";
 import type { Vulnerability } from "@/lib/types";
 
 export async function GET() {
@@ -57,5 +58,6 @@ export async function POST(req: Request) {
     });
   }
 
+  await logAudit({ action: "create", entity: "vulnerability", entity_ref: vuln.cve, summary: `CVE ${vuln.cve} linked — ${body.title}` });
   return NextResponse.json(vuln, { status: 201 });
 }

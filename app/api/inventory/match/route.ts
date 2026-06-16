@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { CVE_FEED, matches } from "@/lib/cve-feed";
 import { calculateRisk } from "@/lib/scoring";
+import { logAudit } from "@/lib/audit";
 import type { Asset, AssetSoftware, Vulnerability } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -64,6 +65,9 @@ export async function POST() {
       }
     }
 
+    if (created > 0) {
+      await logAudit({ action: "match", entity: "vulnerability", entity_ref: `${created} CVEs`, summary: `Auto-matched ${created} new CVE${created > 1 ? "s" : ""} to assets via software inventory` });
+    }
     return NextResponse.json({ matched_pairs: matchedPairs, created_vulns: created });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });

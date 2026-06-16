@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import {
   Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Menu,
-  LineChart, ShieldCheck, Timer, Crosshair, Boxes, BellRing,
+  LineChart, ShieldCheck, Timer, Crosshair, Boxes, BellRing, Database,
 } from "lucide-react";
 import { NotificationBell } from "@/components/notification-bell";
 
@@ -19,6 +19,7 @@ const PAGES: Record<string, { label: string; icon: React.ReactNode; desc: string
   "/risk": { label: "Risk & ROSI", icon: <TrendingUp className="w-4 h-4" />, desc: "Quantify risk and model security investment" },
   "/reports": { label: "Reports", icon: <FileText className="w-4 h-4" />, desc: "Generate executive risk reports" },
   "/notifications": { label: "Notifications", icon: <BellRing className="w-4 h-4" />, desc: "Alert feed and integrations" },
+  "/data": { label: "Data & Audit", icon: <Database className="w-4 h-4" />, desc: "CSV import/export and audit trail" },
 };
 
 interface HeaderProps {
