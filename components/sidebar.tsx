@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Activity, LineChart, ShieldCheck, Timer, Crosshair, Boxes, Bell, Database, X } from "lucide-react";
+import { Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Activity, LineChart, ShieldCheck, Timer, Crosshair, Boxes, Bell, Database, Grid3x3, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -11,6 +11,7 @@ const navItems = [
   { href: "/inventory", label: "Software Inventory", icon: Boxes },
   { href: "/vulnerabilities", label: "Vulnerabilities", icon: Bug },
   { href: "/prioritize", label: "Prioritization", icon: Crosshair },
+  { href: "/heatmap", label: "Risk Heatmap", icon: Grid3x3 },
   { href: "/trends", label: "Risk Trends", icon: LineChart },
   { href: "/sla", label: "SLA & Remediation", icon: Timer },
   { href: "/compliance", label: "Compliance", icon: ShieldCheck },

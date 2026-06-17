@@ -26,7 +26,8 @@
 | 🎯 **Smart Prioritization (SSVC)** | CISA's Stakeholder-Specific Vulnerability Categorization — derives exploitation/exposure/automatability/impact into an Act / Attend / Track* / Track decision and a "fix these first" queue |
 | 💰 **ROSI Modeling** | ALE estimation, security control evaluation, projected savings vs cost |
 | 📈 **Rich Visualizations** | Area, donut, horizontal bar, scatter (CVSS vs EPSS), and radar charts |
-| 📄 **Executive Reports** | Download HTML report with KPIs, severity summary, top risks, and ROSI recommendation |
+| 🟥 **Risk Heatmap** | Interactive 5×5 likelihood × impact matrix — likelihood from exploitation & EPSS, impact from criticality; click any cell to drill into its risks |
+| 📄 **Executive Reports** | Download an executive report (HTML **or paginated PDF**) with KPIs, severity summary, top risks, and ROSI recommendation |
 | 🔔 **Alert Management** | Acknowledge alerts from the dashboard feed — ALE recalculates live |
 | 📣 **Notifications & Integrations** | In-app notification center (bell) plus Slack/webhook push on new KEV CVEs, critical alerts, and SLA breaches — configurable, deduped, with a daily scan |
 | 🗃️ **CSV Import/Export & Audit Log** | Export any dataset to CSV, bulk-import assets/software from CSV, and a full audit trail logging every create/update/delete across the platform |
@@ -105,6 +106,7 @@ app/
   inventory/page.tsx        # 🧩 Software inventory + CVE auto-matching
   vulnerabilities/page.tsx  # 🐛 CVE tracking with status workflow
   prioritize/page.tsx       # 🎯 SSVC smart prioritization queue
+  heatmap/page.tsx          # 🟥 5×5 likelihood × impact risk matrix
   trends/page.tsx           # 📉 Risk trends, burndown & MTTR
   sla/page.tsx              # ⏱️  SLA policy, breach tracking & remediation queue
   compliance/page.tsx       # ✅ NIST CSF / CIS / ISO 27001 coverage mapping

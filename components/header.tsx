@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import {
   Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Menu,
-  LineChart, ShieldCheck, Timer, Crosshair, Boxes, BellRing, Database,
+  LineChart, ShieldCheck, Timer, Crosshair, Boxes, BellRing, Database, Grid3x3,
 } from "lucide-react";
 import { NotificationBell } from "@/components/notification-bell";
 
@@ -13,6 +13,7 @@ const PAGES: Record<string, { label: string; icon: React.ReactNode; desc: string
   "/inventory": { label: "Software Inventory", icon: <Boxes className="w-4 h-4" />, desc: "Track software and auto-match CVEs" },
   "/vulnerabilities": { label: "Vulnerabilities", icon: <Bug className="w-4 h-4" />, desc: "Track and triage CVEs" },
   "/prioritize": { label: "Smart Prioritization", icon: <Crosshair className="w-4 h-4" />, desc: "SSVC decision-based triage" },
+  "/heatmap": { label: "Risk Heatmap", icon: <Grid3x3 className="w-4 h-4" />, desc: "Likelihood × impact risk matrix" },
   "/trends": { label: "Risk Trends", icon: <LineChart className="w-4 h-4" />, desc: "Historical posture and MTTR" },
   "/sla": { label: "SLA & Remediation", icon: <Timer className="w-4 h-4" />, desc: "Deadlines and breach tracking" },
   "/compliance": { label: "Compliance", icon: <ShieldCheck className="w-4 h-4" />, desc: "Framework coverage mapping" },

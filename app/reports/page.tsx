@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Download } from "lucide-react";
+import { FileText, Download, Printer } from "lucide-react";
 import type { Alert, Asset, Control } from "@/lib/types";
 import { estimateAle, calculateRosi } from "@/lib/rosi";
 
@@ -45,7 +45,7 @@ export default function ReportsPage() {
   );
   const topAlerts = [...alerts].sort((a, b) => b.risk_score - a.risk_score).slice(0, 10);
 
-  function generateHtml() {
+  function generateHtml(autoPrint = false) {
     const stamp = new Date().toISOString();
     return `<!DOCTYPE html>
 <html>
@@ -121,6 +121,7 @@ export default function ReportsPage() {
     <li>Financial model can be calibrated to your target industry.</li>
     <li>ALE multiplier: €10,000 per risk point.</li>
   </ul>
+  ${autoPrint ? `<script>window.addEventListener("load",function(){setTimeout(function(){window.print();},200);});</script>` : ""}
 </body>
 </html>`;
   }
@@ -136,6 +137,15 @@ export default function ReportsPage() {
     URL.revokeObjectURL(url);
   }
 
+  // Opens the report in a new window and triggers the browser's print dialog —
+  // "Save as PDF" produces a proper, paginated PDF with no extra dependency.
+  function downloadPdf() {
+    const w = window.open("", "_blank", "width=900,height=1000");
+    if (!w) return;
+    w.document.write(generateHtml(true));
+    w.document.close();
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -143,10 +153,16 @@ export default function ReportsPage() {
           <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
           <p className="text-muted-foreground text-sm mt-1">Generate and download executive risk reports</p>
         </div>
-        <Button onClick={downloadReport} className="gap-2" disabled={alerts.length === 0}>
-          <Download className="w-4 h-4" />
-          Download HTML Report
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={downloadReport} variant="outline" className="gap-2" disabled={alerts.length === 0}>
+            <Download className="w-4 h-4" />
+            HTML
+          </Button>
+          <Button onClick={downloadPdf} className="gap-2" disabled={alerts.length === 0}>
+            <Printer className="w-4 h-4" />
+            Download PDF
+          </Button>
+        </div>
       </div>
 
       {/* Control selector */}
