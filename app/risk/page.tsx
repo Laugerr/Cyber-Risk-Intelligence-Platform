@@ -124,7 +124,7 @@ export default function RiskPage() {
       {(riskByAsset.length > 0 || radarData.length > 0) && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Risk by Asset */}
-          <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+          <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <Activity className="w-4 h-4 text-primary" /> Risk Score by Asset
@@ -137,12 +137,12 @@ export default function RiskPage() {
                   <XAxis type="number" tick={{ fontSize: 9, fill: "oklch(0.6 0 0)" }} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "oklch(0.75 0 0)" }} width={95} />
                   <Tooltip
-                    contentStyle={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }}
+                    contentStyle={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }}
                     formatter={(v) => [Number(v).toFixed(2), "Risk Score"]}
                   />
                   <Bar dataKey="score" radius={[0, 4, 4, 0]}>
                     {riskByAsset.map((_, i) => (
-                      <Cell key={i} fill={i === 0 ? "#ef4444" : i === 1 ? "#f97316" : "oklch(0.62 0.20 32)"} fillOpacity={1 - i * 0.07} />
+                      <Cell key={i} fill={i === 0 ? "#ef4444" : i === 1 ? "#f97316" : "oklch(0.70 0.15 162)"} fillOpacity={1 - i * 0.07} />
                     ))}
                     <LabelList dataKey="score" position="right" style={{ fontSize: 10, fill: "oklch(0.65 0 0)" }} formatter={(v: unknown) => Number(v).toFixed(1)} />
                   </Bar>
@@ -152,7 +152,7 @@ export default function RiskPage() {
           </Card>
 
           {/* Control Radar */}
-          <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+          <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-primary" /> Control Effectiveness vs Cost Efficiency
@@ -166,10 +166,10 @@ export default function RiskPage() {
                   <RadarChart data={radarData}>
                     <PolarGrid stroke="oklch(1 0 0 / 10%)" />
                     <PolarAngleAxis dataKey="name" tick={{ fontSize: 9, fill: "oklch(0.65 0 0)" }} />
-                    <Radar name="Effectiveness %" dataKey="Effectiveness" stroke="#E95420" fill="#E95420" fillOpacity={0.25} />
+                    <Radar name="Effectiveness %" dataKey="Effectiveness" stroke="#10b981" fill="#10b981" fillOpacity={0.25} />
                     <Radar name="Cost Efficiency" dataKey="CostEfficiency" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} />
                     <Tooltip
-                      contentStyle={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }}
+                      contentStyle={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 }}
                     />
                   </RadarChart>
                 </ResponsiveContainer>
@@ -263,14 +263,14 @@ export default function RiskPage() {
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={aleChartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 7%)" />
-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "oklch(0.62 0.03 328)" }} />
-                  <YAxis tick={{ fontSize: 10, fill: "oklch(0.62 0.03 328)" }} tickFormatter={(v) => `€${(v / 1000).toFixed(0)}k`} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "oklch(0.64 0.01 286)" }} />
+                  <YAxis tick={{ fontSize: 10, fill: "oklch(0.64 0.01 286)" }} tickFormatter={(v) => `€${(v / 1000).toFixed(0)}k`} />
                   <Tooltip
                     formatter={(v) => [`€${Number(v).toLocaleString()}`, "ALE"]}
-                    contentStyle={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8 }}
+                    contentStyle={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8 }}
                     labelStyle={{ color: "oklch(0.97 0 0)" }}
                   />
-                  <Bar dataKey="ALE" fill="oklch(0.62 0.20 32)" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="ALE" fill="oklch(0.70 0.15 162)" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}

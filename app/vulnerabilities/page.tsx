@@ -28,7 +28,7 @@ const SEV_COLORS: Record<string, string> = {
   CRITICAL: "#ef4444", HIGH: "#f97316", MEDIUM: "#eab308", LOW: "#22c55e",
 };
 const TOOLTIP_STYLE = {
-  background: "oklch(0.17 0.04 328)",
+  background: "oklch(0.205 0.005 286)",
   border: "1px solid oklch(1 0 0 / 10%)",
   borderRadius: 8,
   fontSize: 12,
@@ -283,11 +283,11 @@ export default function VulnerabilitiesPage() {
         <Input className="pl-9" placeholder="Filter by CVE or title…" value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
         <CardContent className="p-0">
           {filtered.length === 0 ? (
             <div className="py-20 text-center text-muted-foreground">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 opacity-20" style={{ background: "oklch(0.62 0.20 32 / 15%)" }}>
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 opacity-20" style={{ background: "oklch(0.70 0.15 162 / 15%)" }}>
                 <Bug className="w-6 h-6" />
               </div>
               <p className="text-sm font-medium">{search ? "No results matching your filter." : "No vulnerabilities yet."}</p>
@@ -394,7 +394,7 @@ function VulnCharts({ vulns, assetMap }: { vulns: Vulnerability[]; assetMap: Rec
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {/* CVSS Distribution */}
-      <div className="rounded-xl p-5" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <div className="rounded-xl p-5" style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
         <p className="text-sm font-semibold mb-4 flex items-center gap-2">
           <BarChart2 className="w-4 h-4 text-primary" /> CVSS Distribution
         </p>
@@ -412,7 +412,7 @@ function VulnCharts({ vulns, assetMap }: { vulns: Vulnerability[]; assetMap: Rec
       </div>
 
       {/* CVSS vs EPSS Scatter */}
-      <div className="rounded-xl p-5" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <div className="rounded-xl p-5" style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
         <p className="text-sm font-semibold mb-1 flex items-center gap-2">
           <Flame className="w-4 h-4 text-primary" /> CVSS vs EPSS Exploit Probability
         </p>
@@ -435,7 +435,7 @@ function VulnCharts({ vulns, assetMap }: { vulns: Vulnerability[]; assetMap: Rec
               />
               <Scatter data={scatterData} isAnimationActive={false}>
                 {scatterData.map((d, i) => (
-                  <Cell key={i} fill={SEV_COLORS[d.severity] ?? "#E95420"} fillOpacity={0.8} />
+                  <Cell key={i} fill={SEV_COLORS[d.severity] ?? "#10b981"} fillOpacity={0.8} />
                 ))}
               </Scatter>
             </ScatterChart>
@@ -448,14 +448,14 @@ function VulnCharts({ vulns, assetMap }: { vulns: Vulnerability[]; assetMap: Rec
 
 function StatCard({ label, value, icon, highlight }: { label: string; value: string | number; icon: React.ReactNode; highlight?: boolean }) {
   return (
-    <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+    <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
       <CardContent className="pt-4 pb-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
             <p className={`text-2xl font-bold ${highlight ? "text-primary" : "text-foreground"}`}>{value}</p>
           </div>
-          <div className={`p-2.5 rounded-lg ${highlight ? "text-primary" : "text-muted-foreground"}`} style={{ background: highlight ? "oklch(0.62 0.20 32 / 12%)" : "oklch(1 0 0 / 5%)" }}>
+          <div className={`p-2.5 rounded-lg ${highlight ? "text-primary" : "text-muted-foreground"}`} style={{ background: highlight ? "oklch(0.70 0.15 162 / 12%)" : "oklch(1 0 0 / 5%)" }}>
             {icon}
           </div>
         </div>

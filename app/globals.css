@@ -67,57 +67,44 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.7rem;
 }
 
 .dark {
-  /* Ubuntu aubergine dark theme */
-  --background: oklch(0.09 0.04 328);
-  --foreground: oklch(0.97 0 0);
-  --card: oklch(0.13 0.04 328);
-  --card-foreground: oklch(0.97 0 0);
-  --popover: oklch(0.13 0.04 328);
-  --popover-foreground: oklch(0.97 0 0);
-  /* Ubuntu orange: #E95420 */
-  --primary: oklch(0.62 0.20 32);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.18 0.04 328);
-  --secondary-foreground: oklch(0.97 0 0);
-  --muted: oklch(0.18 0.04 328);
-  --muted-foreground: oklch(0.62 0.03 328);
-  --accent: oklch(0.22 0.05 328);
-  --accent-foreground: oklch(0.97 0 0);
-  --destructive: oklch(0.65 0.22 25);
-  --border: oklch(1 0 0 / 7%);
-  --input: oklch(1 0 0 / 9%);
-  --ring: oklch(0.62 0.20 32);
-  --chart-1: oklch(0.62 0.20 32);
-  --chart-2: oklch(0.65 0.22 25);
-  --chart-3: oklch(0.75 0.18 55);
-  --chart-4: oklch(0.60 0.16 260);
-  --chart-5: oklch(0.50 0.12 310);
-  --sidebar: oklch(0.08 0.04 328);
-  --sidebar-foreground: oklch(0.97 0 0);
-  --sidebar-primary: oklch(0.62 0.20 32);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.18 0.04 328);
-  --sidebar-accent-foreground: oklch(0.97 0 0);
-  --sidebar-border: oklch(1 0 0 / 7%);
-  --sidebar-ring: oklch(0.62 0.20 32);
-  --radius: 0.5rem;
+  /* Obsidian + Emerald */
+  --background: oklch(0.13 0.004 286);
+  --foreground: oklch(0.97 0.003 286);
+  --card: oklch(0.175 0.004 286);
+  --card-foreground: oklch(0.97 0.003 286);
+  --popover: oklch(0.185 0.004 286);
+  --popover-foreground: oklch(0.97 0.003 286);
+  /* Emerald #10b981 */
+  --primary: oklch(0.7 0.15 162);
+  --primary-foreground: oklch(0.16 0.03 165);
+  --secondary: oklch(0.215 0.005 286);
+  --secondary-foreground: oklch(0.97 0.003 286);
+  --muted: oklch(0.215 0.005 286);
+  --muted-foreground: oklch(0.64 0.01 286);
+  --accent: oklch(0.25 0.006 286);
+  --accent-foreground: oklch(0.97 0.003 286);
+  --destructive: oklch(0.62 0.21 25);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.7 0.15 162);
+  --chart-1: oklch(0.7 0.15 162);
+  --chart-2: oklch(0.82 0.13 175);
+  --chart-3: oklch(0.7 0.14 230);
+  --chart-4: oklch(0.65 0.18 290);
+  --chart-5: oklch(0.78 0.16 75);
+  --sidebar: oklch(0.115 0.004 286);
+  --sidebar-foreground: oklch(0.97 0.003 286);
+  --sidebar-primary: oklch(0.7 0.15 162);
+  --sidebar-primary-foreground: oklch(0.16 0.03 165);
+  --sidebar-accent: oklch(0.215 0.005 286);
+  --sidebar-accent-foreground: oklch(0.97 0.003 286);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.7 0.15 162);
+  --radius: 0.7rem;
 }
 
 @layer base {
@@ -126,8 +113,112 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Ambient emerald glow over the obsidian base */
+    background-image:
+      radial-gradient(900px 600px at 12% -8%, oklch(0.7 0.15 162 / 9%), transparent 60%),
+      radial-gradient(800px 600px at 100% 0%, oklch(0.7 0.14 230 / 6%), transparent 55%);
+    background-attachment: fixed;
   }
   html {
     @apply font-sans;
+    scrollbar-color: oklch(0.7 0.15 162 / 35%) transparent;
   }
+}
+
+/* ───────────── Motion system ───────────── */
+@keyframes crisp-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes crisp-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes crisp-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes crisp-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(0.7 0.15 162 / 45%); }
+  50%      { box-shadow: 0 0 0 5px oklch(0.7 0.15 162 / 0%); }
+}
+@keyframes crisp-shimmer {
+  100% { transform: translateX(100%); }
+}
+@keyframes crisp-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+@keyframes crisp-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+.animate-fade-up { animation: crisp-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-fade { animation: crisp-fade 0.5s ease both; }
+.animate-scale-in { animation: crisp-scale-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-float { animation: crisp-float 4s ease-in-out infinite; }
+
+/* Staggered reveal for grids of cards/rows */
+.stagger > * { animation: crisp-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger > *:nth-child(2) { animation-delay: 0.08s; }
+.stagger > *:nth-child(3) { animation-delay: 0.12s; }
+.stagger > *:nth-child(4) { animation-delay: 0.16s; }
+.stagger > *:nth-child(5) { animation-delay: 0.20s; }
+.stagger > *:nth-child(6) { animation-delay: 0.24s; }
+.stagger > *:nth-child(7) { animation-delay: 0.28s; }
+.stagger > *:nth-child(8) { animation-delay: 0.32s; }
+
+/* Glassmorphism panel */
+.glass {
+  background: oklch(0.2 0.006 286 / 55%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* Emerald glow helpers */
+.glow-emerald { box-shadow: 0 0 24px -6px oklch(0.7 0.15 162 / 45%); }
+.glow-ring { animation: crisp-glow-pulse 2.2s ease-out infinite; }
+.text-glow { text-shadow: 0 0 18px oklch(0.7 0.15 162 / 45%); }
+
+/* Animated gradient text/element */
+.gradient-emerald {
+  background: linear-gradient(90deg, oklch(0.7 0.15 162), oklch(0.82 0.13 175), oklch(0.7 0.14 230));
+  background-size: 200% 100%;
+  animation: crisp-gradient 6s ease infinite;
+}
+
+/* Shimmer sweep (use on a relative, overflow-hidden parent) */
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 8%), transparent);
+  animation: crisp-shimmer 2.5s infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: oklch(0.7 0.15 162 / 28%);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: oklch(0.7 0.15 162 / 50%); background-clip: padding-box; }
+
+/* Cards lift + glow on hover (Card primitive opts in via .card-interactive) */
+.card-interactive {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.card-interactive:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 40px -18px oklch(0.7 0.15 162 / 40%), 0 0 0 1px oklch(0.7 0.15 162 / 20%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }

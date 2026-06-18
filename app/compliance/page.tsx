@@ -10,8 +10,8 @@ import type { ComplianceStatus } from "@/lib/types";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import { toast } from "sonner";
 
-const PANEL = { background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
-const TOOLTIP_STYLE = { background: "oklch(0.17 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 };
+const PANEL = { background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
+const TOOLTIP_STYLE = { background: "oklch(0.205 0.005 286)", border: "1px solid oklch(1 0 0 / 10%)", borderRadius: 8, fontSize: 12 };
 
 const STATUS_META: Record<CompStatus, { label: string; color: string; cls: string }> = {
   met: { label: "Met", color: "#22c55e", cls: "bg-green-500/15 text-green-400 border-green-500/30" },
@@ -130,8 +130,8 @@ export default function CompliancePage() {
               className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all"
               style={
                 isActive
-                  ? { background: "oklch(0.62 0.20 32 / 12%)", border: "1px solid oklch(0.62 0.20 32 / 30%)", color: "oklch(0.7 0.15 32)" }
-                  : { background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)", color: "oklch(0.65 0 0)" }
+                  ? { background: "oklch(0.70 0.15 162 / 12%)", border: "1px solid oklch(0.70 0.15 162 / 30%)", color: "oklch(0.80 0.14 163)" }
+                  : { background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)", color: "oklch(0.65 0 0)" }
               }
             >
               <ShieldCheck className="w-4 h-4" />

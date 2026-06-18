@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Grid3x3, AlertOctagon, Layers, Crosshair } from "lucide-react";
 import type { Asset, Vulnerability, Alert, Severity } from "@/lib/types";
 
-const PANEL = { background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
+const PANEL = { background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
 
 const SEV_CLS: Record<string, string> = {
   CRITICAL: "bg-red-500/15 text-red-400 border-red-500/30",

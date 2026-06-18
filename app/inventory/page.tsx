@@ -10,7 +10,7 @@ import { Boxes, Server, Database, Link2, Plus, Trash2, Wand2, ShieldAlert } from
 import type { Asset, AssetSoftware } from "@/lib/types";
 import { toast } from "sonner";
 
-const PANEL = { background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
+const PANEL = { background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
 
 type SoftwareView = AssetSoftware & { asset_name: string };
 interface PreviewItem {
@@ -194,7 +194,7 @@ export default function InventoryPage() {
                   value={form.asset_id}
                   onChange={(e) => setForm({ ...form, asset_id: e.target.value })}
                   className="sm:col-span-3 h-9 rounded-md px-3 text-sm bg-transparent outline-none"
-                  style={{ background: "oklch(0.16 0.03 328)", border: "1px solid oklch(1 0 0 / 10%)" }}
+                  style={{ background: "oklch(0.205 0.004 286)", border: "1px solid oklch(1 0 0 / 10%)" }}
                 >
                   <option value="">Select asset…</option>
                   {assets.map((a) => <option key={a.id} value={a.id} className="bg-[#1a1320]">{a.name}</option>)}

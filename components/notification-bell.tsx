@@ -81,7 +81,7 @@ export function NotificationBell() {
       {open && (
         <div
           className="absolute right-0 mt-2 w-80 rounded-xl overflow-hidden shadow-2xl z-50"
-          style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 10%)" }}
+          style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 10%)" }}
         >
           <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: "1px solid oklch(1 0 0 / 6%)" }}>
             <span className="text-sm font-semibold">Notifications</span>
@@ -103,7 +103,7 @@ export function NotificationBell() {
                 <div
                   key={n.id}
                   className="flex items-start gap-2.5 px-4 py-2.5 hover:bg-white/[0.02]"
-                  style={{ borderBottom: "1px solid oklch(1 0 0 / 4%)", background: n.read ? undefined : "oklch(0.62 0.20 32 / 5%)" }}
+                  style={{ borderBottom: "1px solid oklch(1 0 0 / 4%)", background: n.read ? undefined : "oklch(0.70 0.15 162 / 5%)" }}
                 >
                   <span className="mt-0.5 flex-shrink-0">{TYPE_ICON[n.type]}</span>
                   <div className="min-w-0">

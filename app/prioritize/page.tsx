@@ -8,7 +8,7 @@ import { Target, Zap, ListChecks, Crosshair, Info } from "lucide-react";
 import { DECISION_META, type Decision, type SsvcAssessment } from "@/lib/ssvc";
 import type { Severity } from "@/lib/types";
 
-const PANEL = { background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
+const PANEL = { background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
 
 const SEV_CLS: Record<string, string> = {
   CRITICAL: "bg-red-500/15 text-red-400 border-red-500/30",
@@ -145,8 +145,8 @@ export default function PrioritizePage() {
                 <button key={key} onClick={() => setFilter(key)}
                   className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                   style={isActive
-                    ? { background: "oklch(0.62 0.20 32 / 12%)", border: "1px solid oklch(0.62 0.20 32 / 30%)", color: "oklch(0.7 0.15 32)" }
-                    : { background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)", color: "oklch(0.65 0 0)" }}>
+                    ? { background: "oklch(0.70 0.15 162 / 12%)", border: "1px solid oklch(0.70 0.15 162 / 30%)", color: "oklch(0.80 0.14 163)" }
+                    : { background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)", color: "oklch(0.65 0 0)" }}>
                   {key === "all" ? "All" : DECISION_META[key].label} <span className="opacity-60">{n}</span>
                 </button>
               );

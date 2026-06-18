@@ -33,7 +33,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <div
-      className="flex items-center justify-between px-4 sm:px-6 py-3 shrink-0"
+      className="glass sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 py-3 shrink-0"
       style={{ borderBottom: "1px solid oklch(1 0 0 / 6%)" }}
     >
       <div className="flex items-center gap-3">
@@ -47,7 +47,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         <div
           className="flex items-center justify-center w-7 h-7 rounded-lg text-primary flex-shrink-0"
-          style={{ background: "oklch(0.62 0.20 32 / 12%)", border: "1px solid oklch(0.62 0.20 32 / 20%)" }}
+          style={{ background: "oklch(0.70 0.15 162 / 12%)", border: "1px solid oklch(0.70 0.15 162 / 20%)" }}
         >
           {page.icon}
         </div>
@@ -61,7 +61,7 @@ export function Header({ onMenuClick }: HeaderProps) {
         <NotificationBell />
         <div
           className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg"
-          style={{ background: "oklch(0.62 0.20 32 / 8%)", border: "1px solid oklch(0.62 0.20 32 / 15%)" }}
+          style={{ background: "oklch(0.70 0.15 162 / 8%)", border: "1px solid oklch(0.70 0.15 162 / 15%)" }}
         >
           <Shield className="w-3 h-3 text-primary" />
           <span className="text-xs font-medium text-primary">CRISP v2.0</span>

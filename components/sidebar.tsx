@@ -38,21 +38,21 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
         // Mobile: slide in/out
         open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}
-      style={{ background: "oklch(0.08 0.04 328)", borderRight: "1px solid oklch(1 0 0 / 7%)" }}
+      style={{ background: "oklch(0.115 0.004 286)", borderRight: "1px solid oklch(1 0 0 / 7%)" }}
     >
       {/* Logo */}
       <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid oklch(1 0 0 / 6%)" }}>
         <div className="flex items-center gap-3">
           <div
-            className="relative flex items-center justify-center w-8 h-8 rounded-xl flex-shrink-0"
-            style={{ background: "oklch(0.62 0.20 32 / 15%)", border: "1px solid oklch(0.62 0.20 32 / 30%)" }}
+            className="glow-ring relative flex items-center justify-center w-8 h-8 rounded-xl flex-shrink-0"
+            style={{ background: "oklch(0.70 0.15 162 / 15%)", border: "1px solid oklch(0.70 0.15 162 / 30%)" }}
           >
             <Shield className="w-4 h-4 text-primary" />
             <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-primary animate-pulse" />
           </div>
           <div>
-            <p className="font-bold text-sm tracking-wide text-foreground">CRISP</p>
-            <p className="text-[10px] tracking-widest uppercase" style={{ color: "oklch(0.62 0.20 32)" }}>
+            <p className="font-bold text-sm tracking-[0.18em] gradient-emerald bg-clip-text text-transparent">CRISP</p>
+            <p className="text-[10px] tracking-widest uppercase" style={{ color: "oklch(0.70 0.15 162)" }}>
               Cyber Risk Intel
             </p>
           </div>
@@ -80,12 +80,12 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
               href={href}
               onClick={onClose}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
+                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:translate-x-0.5 hover:bg-white/[0.025]",
                 active ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}
               style={
                 active
-                  ? { background: "oklch(0.62 0.20 32 / 12%)", border: "1px solid oklch(0.62 0.20 32 / 25%)" }
+                  ? { background: "oklch(0.70 0.15 162 / 12%)", border: "1px solid oklch(0.70 0.15 162 / 25%)" }
                   : { border: "1px solid transparent" }
               }
             >
@@ -98,7 +98,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                 <Icon className="w-3.5 h-3.5" />
               </div>
               {label}
-              {active && <div className="ml-auto w-1 h-4 rounded-full bg-primary" />}
+              {active && <div className="ml-auto w-1 h-4 rounded-full bg-primary glow-emerald" />}
             </Link>
           );
         })}
@@ -107,7 +107,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
       {/* Status footer */}
       <div
         className="mx-3 mb-4 px-4 py-3 rounded-xl"
-        style={{ background: "oklch(0.62 0.20 32 / 8%)", border: "1px solid oklch(0.62 0.20 32 / 20%)" }}
+        style={{ background: "oklch(0.70 0.15 162 / 8%)", border: "1px solid oklch(0.70 0.15 162 / 20%)" }}
       >
         <div className="flex items-center gap-2 mb-0.5">
           <Activity className="w-3 h-3 text-primary" />

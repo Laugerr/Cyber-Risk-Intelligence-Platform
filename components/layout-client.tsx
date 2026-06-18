@@ -1,17 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
 import { AskCrisp } from "@/components/ask-crisp";
 
 export function LayoutClient({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
     setSidebarOpen(false);
-  }, []);
+  }, [pathname]);
 
   return (
     <>
@@ -27,7 +29,7 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
 
       <main className="flex-1 lg:ml-64 min-h-screen overflow-y-auto flex flex-col">
         <Header onMenuClick={() => setSidebarOpen((v) => !v)} />
-        <div className="p-4 sm:p-6 flex-1">
+        <div key={pathname} className="p-4 sm:p-6 flex-1 animate-fade-up">
           {children}
         </div>
       </main>

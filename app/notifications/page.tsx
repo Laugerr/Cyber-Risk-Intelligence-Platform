@@ -9,7 +9,7 @@ import { Bell, RefreshCw, Check, Trash2, Send, Webhook, Zap, AlertTriangle, Cloc
 import type { Notification, NotificationType, NotificationSettings } from "@/lib/types";
 import { toast } from "sonner";
 
-const PANEL = { background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
+const PANEL = { background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
 
 const TYPE_ICON: Record<NotificationType, React.ReactNode> = {
   kev: <Zap className="w-4 h-4 text-red-400" />,
@@ -196,7 +196,7 @@ export default function NotificationsPage() {
               ) : (
                 items.map((n, i) => (
                   <div key={n.id} className="flex items-start gap-3 px-5 py-3"
-                    style={{ borderBottom: i < items.length - 1 ? "1px solid oklch(1 0 0 / 5%)" : "none", background: n.read ? undefined : "oklch(0.62 0.20 32 / 4%)" }}>
+                    style={{ borderBottom: i < items.length - 1 ? "1px solid oklch(1 0 0 / 5%)" : "none", background: n.read ? undefined : "oklch(0.70 0.15 162 / 4%)" }}>
                     <span className="mt-0.5 flex-shrink-0">{TYPE_ICON[n.type]}</span>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium">{n.title}</p>
@@ -220,7 +220,7 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
       <span className="text-sm text-left">{label}</span>
       <span
         className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
-        style={{ background: checked ? "oklch(0.62 0.20 32)" : "oklch(0.25 0.02 328)" }}
+        style={{ background: checked ? "oklch(0.70 0.15 162)" : "oklch(0.27 0.005 286)" }}
       >
         <span
           className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform"

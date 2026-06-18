@@ -25,12 +25,12 @@ const SEV_COLORS: Record<string, string> = {
   LOW: "#22c55e",
 };
 
-const TYPE_COLORS = ["#E95420", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899"];
+const TYPE_COLORS = ["#10b981", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899"];
 
 const SEV_ORDER = ["CRITICAL", "HIGH", "MEDIUM", "LOW"] as const;
 
 const TOOLTIP_STYLE = {
-  background: "oklch(0.17 0.04 328)",
+  background: "oklch(0.205 0.005 286)",
   border: "1px solid oklch(1 0 0 / 10%)",
   borderRadius: 8,
   fontSize: 12,
@@ -163,7 +163,7 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+      <div className="stagger grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         <KpiCard loading={loading} icon={<Server className="w-4 h-4" />} label="Total Assets"
           value={assets.length} sub={`${assets.filter((a) => a.internet_exposed).length} internet exposed`}
           iconBg="bg-blue-500/10" iconColor="text-blue-400" />
@@ -191,14 +191,14 @@ export default function DashboardPage() {
             const pct = alerts.length > 0 ? Math.round((count / alerts.length) * 100) : 0;
             return (
               <div key={s} className="relative rounded-xl p-4 overflow-hidden"
-                style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+                style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
                 <div className="absolute inset-0 opacity-5" style={{ background: SEV_COLORS[s] }} />
                 <div className="flex items-center justify-between mb-2">
                   <SevBadge severity={s} />
                   <span className="text-xs text-muted-foreground">{pct}%</span>
                 </div>
                 <p className="text-2xl font-bold">{count}</p>
-                <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: "oklch(0.20 0.03 328)" }}>
+                <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: "oklch(0.235 0.005 286)" }}>
                   <div className="h-full rounded-full" style={{ width: `${pct}%`, background: SEV_COLORS[s] }} />
                 </div>
               </div>
@@ -209,7 +209,7 @@ export default function DashboardPage() {
 
       {/* Charts row 1 — CVE trend + Severity donut */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <Card className="lg:col-span-3" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <Card className="lg:col-span-3" style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <Activity className="w-4 h-4 text-primary" /> Top Risk Scores by CVE
@@ -223,22 +223,22 @@ export default function DashboardPage() {
                 <AreaChart data={trendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                   <defs>
                     <linearGradient id="riskGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#E95420" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#E95420" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 6%)" />
                   <XAxis dataKey="name" tick={{ fontSize: 9, fill: "oklch(0.6 0 0)" }} />
                   <YAxis tick={{ fontSize: 9, fill: "oklch(0.6 0 0)" }} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Area type="monotone" dataKey="score" stroke="#E95420" strokeWidth={2} fill="url(#riskGrad)" />
+                  <Area type="monotone" dataKey="score" stroke="#10b981" strokeWidth={2} fill="url(#riskGrad)" />
                 </AreaChart>
               </ResponsiveContainer>
             )}
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <Card className="lg:col-span-2" style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <Zap className="w-4 h-4 text-primary" /> Severity Distribution
@@ -265,7 +265,7 @@ export default function DashboardPage() {
 
       {/* Charts row 2 — Risk by Asset + Asset Type */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <Card className="lg:col-span-3" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <Card className="lg:col-span-3" style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-primary" /> Risk Score by Asset
@@ -283,7 +283,7 @@ export default function DashboardPage() {
                   <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => [Number(v).toFixed(2), "Risk Score"]} />
                   <Bar dataKey="score" radius={[0, 4, 4, 0]}>
                     {riskByAsset.map((entry, i) => (
-                      <Cell key={i} fill={i === 0 ? "#ef4444" : i === 1 ? "#f97316" : "#E95420"} fillOpacity={1 - i * 0.08} />
+                      <Cell key={i} fill={i === 0 ? "#ef4444" : i === 1 ? "#f97316" : "#10b981"} fillOpacity={1 - i * 0.08} />
                     ))}
                     <LabelList dataKey="score" position="right" style={{ fontSize: 10, fill: "oklch(0.7 0 0)" }} formatter={(v: unknown) => Number(v).toFixed(1)} />
                   </Bar>
@@ -293,7 +293,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2" style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <Card className="lg:col-span-2" style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <PieChartIcon className="w-4 h-4 text-primary" /> Asset Types
@@ -329,7 +329,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Alerts feed */}
-      <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
         <CardHeader className="pb-3 flex-row items-center justify-between">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <Shield className="w-4 h-4 text-primary" /> Recent Alerts
@@ -392,7 +392,7 @@ function KpiCard({ icon, label, value, sub, iconBg, iconColor, trend, loading }:
   iconBg: string; iconColor: string; trend?: "up"; loading?: boolean;
 }) {
   return (
-    <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+    <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
       <CardContent className="pt-5">
         <div className="flex items-start justify-between mb-3">
           <div className={`flex items-center justify-center w-9 h-9 rounded-lg ${iconBg}`}>

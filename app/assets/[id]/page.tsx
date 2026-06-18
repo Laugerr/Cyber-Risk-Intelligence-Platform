@@ -45,7 +45,7 @@ const STATUS_CYCLE: Record<VulnStatus, VulnStatus> = {
 };
 
 const TOOLTIP_STYLE = {
-  background: "oklch(0.17 0.04 328)",
+  background: "oklch(0.205 0.005 286)",
   border: "1px solid oklch(1 0 0 / 10%)",
   borderRadius: 8,
   fontSize: 12,
@@ -119,7 +119,7 @@ export default function AssetDetailPage() {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center justify-center w-9 h-9 rounded-xl text-primary shrink-0"
-              style={{ background: "oklch(0.62 0.20 32 / 12%)", border: "1px solid oklch(0.62 0.20 32 / 25%)" }}>
+              style={{ background: "oklch(0.70 0.15 162 / 12%)", border: "1px solid oklch(0.70 0.15 162 / 25%)" }}>
               {TYPE_ICON[asset.asset_type] ?? TYPE_ICON.Other}
             </div>
             <div>
@@ -153,7 +153,7 @@ export default function AssetDetailPage() {
       {(sevData.length > 0 || cvssData.length > 0) && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Alert severity donut */}
-          <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+          <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <Shield className="w-4 h-4 text-primary" /> Alert Severity Breakdown
@@ -187,7 +187,7 @@ export default function AssetDetailPage() {
           </Card>
 
           {/* CVSS bar */}
-          <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+          <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <Bug className="w-4 h-4 text-primary" /> CVSS by CVE
@@ -216,7 +216,7 @@ export default function AssetDetailPage() {
 
       {/* Remediation progress bar */}
       {vulns.length > 0 && (
-        <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardContent className="py-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium">Remediation Progress</span>
@@ -225,7 +225,7 @@ export default function AssetDetailPage() {
             <div className="h-2 rounded-full overflow-hidden" style={{ background: "oklch(1 0 0 / 8%)" }}>
               <div
                 className="h-full rounded-full transition-all duration-500"
-                style={{ width: `${(resolvedVulns / vulns.length) * 100}%`, background: "oklch(0.62 0.20 32)" }}
+                style={{ width: `${(resolvedVulns / vulns.length) * 100}%`, background: "oklch(0.70 0.15 162)" }}
               />
             </div>
             <div className="flex gap-4 mt-3 text-xs text-muted-foreground">
@@ -238,7 +238,7 @@ export default function AssetDetailPage() {
       )}
 
       {/* Vulnerability table */}
-      <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Bug className="w-4 h-4 text-primary" /> Vulnerabilities
@@ -302,7 +302,7 @@ export default function AssetDetailPage() {
 
       {/* Alerts */}
       {alerts.length > 0 && (
-        <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+        <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-primary" /> Active Alerts
@@ -335,7 +335,7 @@ export default function AssetDetailPage() {
 
 function MiniKpi({ label, value, icon, color, bg }: { label: string; value: string | number; icon: React.ReactNode; color: string; bg: string }) {
   return (
-    <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+    <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
       <CardContent className="pt-4 pb-4">
         <div className="flex items-center justify-between">
           <div>

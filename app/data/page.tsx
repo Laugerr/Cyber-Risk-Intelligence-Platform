@@ -12,7 +12,7 @@ import { toCsv, parseCsv } from "@/lib/csv";
 import type { AuditLog } from "@/lib/types";
 import { toast } from "sonner";
 
-const PANEL = { background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
+const PANEL = { background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
 
 const ACTION_META: Record<string, { icon: React.ReactNode; color: string }> = {
   create: { icon: <Plus className="w-3.5 h-3.5" />, color: "#22c55e" },
@@ -175,8 +175,8 @@ export default function DataPage() {
                 <button key={t} onClick={() => { setImportType(t); setParsed(null); setFileName(""); }}
                   className="px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all"
                   style={importType === t
-                    ? { background: "oklch(0.62 0.20 32 / 12%)", border: "1px solid oklch(0.62 0.20 32 / 30%)", color: "oklch(0.7 0.15 32)" }
-                    : { background: "oklch(0.16 0.03 328)", border: "1px solid oklch(1 0 0 / 8%)", color: "oklch(0.65 0 0)" }}>
+                    ? { background: "oklch(0.70 0.15 162 / 12%)", border: "1px solid oklch(0.70 0.15 162 / 30%)", color: "oklch(0.80 0.14 163)" }
+                    : { background: "oklch(0.205 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)", color: "oklch(0.65 0 0)" }}>
                   {t}
                 </button>
               ))}

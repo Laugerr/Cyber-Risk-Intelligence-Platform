@@ -14,9 +14,9 @@ import {
 } from "recharts";
 import { toast } from "sonner";
 
-const PANEL = { background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
+const PANEL = { background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
 const TOOLTIP_STYLE = {
-  background: "oklch(0.17 0.04 328)",
+  background: "oklch(0.205 0.005 286)",
   border: "1px solid oklch(1 0 0 / 10%)",
   borderRadius: 8,
   fontSize: 12,
@@ -142,15 +142,15 @@ export default function TrendsPage() {
                 <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="riskArea" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#E95420" stopOpacity={0.35} />
-                      <stop offset="95%" stopColor="#E95420" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 6%)" />
                   <XAxis dataKey="date" tick={{ fontSize: 10, fill: "oklch(0.6 0 0)" }} minTickGap={20} />
                   <YAxis tick={{ fontSize: 10, fill: "oklch(0.6 0 0)" }} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} />
-                  <Area type="monotone" dataKey="risk" name="Risk score" stroke="#E95420" strokeWidth={2} fill="url(#riskArea)" />
+                  <Area type="monotone" dataKey="risk" name="Risk score" stroke="#10b981" strokeWidth={2} fill="url(#riskArea)" />
                 </AreaChart>
               </ResponsiveContainer>
             </CardContent>
@@ -271,7 +271,7 @@ function EmptyState({ onGenerate, working }: { onGenerate: () => void; working: 
       <CardContent className="py-16 text-center">
         <div
           className="flex items-center justify-center w-14 h-14 rounded-2xl mx-auto mb-4"
-          style={{ background: "oklch(0.62 0.20 32 / 12%)", border: "1px solid oklch(0.62 0.20 32 / 25%)" }}
+          style={{ background: "oklch(0.70 0.15 162 / 12%)", border: "1px solid oklch(0.70 0.15 162 / 25%)" }}
         >
           <CalendarClock className="w-7 h-7 text-primary" />
         </div>

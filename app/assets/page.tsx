@@ -138,11 +138,11 @@ export default function AssetsPage() {
         </div>
       )}
 
-      <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+      <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
         <CardContent className="p-0">
           {assets.length === 0 ? (
             <div className="py-20 text-center text-muted-foreground">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 opacity-20" style={{ background: "oklch(0.62 0.20 32 / 15%)" }}>
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 opacity-20" style={{ background: "oklch(0.70 0.15 162 / 15%)" }}>
                 <Server className="w-6 h-6" />
               </div>
               <p className="text-sm font-medium">No assets yet</p>
@@ -208,14 +208,14 @@ export default function AssetsPage() {
 
 function StatCard({ label, value, icon, highlight }: { label: string; value: number; icon: React.ReactNode; highlight?: boolean }) {
   return (
-    <Card style={{ background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" }}>
+    <Card style={{ background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}>
       <CardContent className="pt-4 pb-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
             <p className={`text-2xl font-bold ${highlight ? "text-primary" : "text-foreground"}`}>{value}</p>
           </div>
-          <div className={`p-2.5 rounded-lg ${highlight ? "text-primary" : "text-muted-foreground"}`} style={{ background: highlight ? "oklch(0.62 0.20 32 / 12%)" : "oklch(1 0 0 / 5%)" }}>
+          <div className={`p-2.5 rounded-lg ${highlight ? "text-primary" : "text-muted-foreground"}`} style={{ background: highlight ? "oklch(0.70 0.15 162 / 12%)" : "oklch(1 0 0 / 5%)" }}>
             {icon}
           </div>
         </div>

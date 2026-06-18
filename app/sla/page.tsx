@@ -10,7 +10,7 @@ import { Gauge, AlertOctagon, CalendarClock, Timer, Save, ShieldAlert } from "lu
 import type { RemediationItem, SlaPolicy, SlaState, Severity } from "@/lib/types";
 import { toast } from "sonner";
 
-const PANEL = { background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
+const PANEL = { background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" } as const;
 
 const SEV_CLS: Record<string, string> = {
   CRITICAL: "bg-red-500/15 text-red-400 border-red-500/30",
@@ -196,8 +196,8 @@ export default function SlaPage() {
                   className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                   style={
                     isActive
-                      ? { background: "oklch(0.62 0.20 32 / 12%)", border: "1px solid oklch(0.62 0.20 32 / 30%)", color: "oklch(0.7 0.15 32)" }
-                      : { background: "oklch(0.13 0.04 328)", border: "1px solid oklch(1 0 0 / 8%)", color: "oklch(0.65 0 0)" }
+                      ? { background: "oklch(0.70 0.15 162 / 12%)", border: "1px solid oklch(0.70 0.15 162 / 30%)", color: "oklch(0.80 0.14 163)" }
+                      : { background: "oklch(0.175 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)", color: "oklch(0.65 0 0)" }
                   }
                 >
                   {f.label} <span className="opacity-60">{n}</span>

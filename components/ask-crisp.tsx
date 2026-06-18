@@ -13,7 +13,7 @@ const SUGGESTIONS = [
   "Explain my top alert in plain English",
 ];
 
-const PANEL_BG = "oklch(0.13 0.04 328)";
+const PANEL_BG = "oklch(0.175 0.004 286)";
 const PANEL_BORDER = "1px solid oklch(1 0 0 / 8%)";
 
 export function AskCrisp() {
@@ -93,7 +93,7 @@ export function AskCrisp() {
         <button
           onClick={() => setOpen(true)}
           className="fixed bottom-5 right-5 z-50 flex items-center gap-2 h-12 px-4 rounded-full shadow-lg text-sm font-semibold text-primary-foreground transition-transform hover:scale-105 active:scale-95"
-          style={{ background: "oklch(0.62 0.20 32)" }}
+          style={{ background: "oklch(0.70 0.15 162)" }}
           aria-label="Open CRISP AI Analyst"
         >
           <Sparkles className="w-4 h-4" />
@@ -115,7 +115,7 @@ export function AskCrisp() {
             <div className="flex items-center gap-2.5">
               <div
                 className="flex items-center justify-center w-8 h-8 rounded-lg"
-                style={{ background: "oklch(0.62 0.20 32 / 15%)", border: "1px solid oklch(0.62 0.20 32 / 30%)" }}
+                style={{ background: "oklch(0.70 0.15 162 / 15%)", border: "1px solid oklch(0.70 0.15 162 / 30%)" }}
               >
                 <Sparkles className="w-4 h-4 text-primary" />
               </div>
@@ -151,7 +151,7 @@ export function AskCrisp() {
               <div className="h-full flex flex-col items-center justify-center text-center px-2">
                 <div
                   className="flex items-center justify-center w-12 h-12 rounded-2xl mb-3"
-                  style={{ background: "oklch(0.62 0.20 32 / 12%)", border: "1px solid oklch(0.62 0.20 32 / 25%)" }}
+                  style={{ background: "oklch(0.70 0.15 162 / 12%)", border: "1px solid oklch(0.70 0.15 162 / 25%)" }}
                 >
                   <Shield className="w-6 h-6 text-primary" />
                 </div>
@@ -165,7 +165,7 @@ export function AskCrisp() {
                       key={s}
                       onClick={() => send(s)}
                       className="text-left text-xs px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground transition-colors"
-                      style={{ background: "oklch(0.16 0.03 328)", border: "1px solid oklch(1 0 0 / 6%)" }}
+                      style={{ background: "oklch(0.205 0.004 286)", border: "1px solid oklch(1 0 0 / 6%)" }}
                     >
                       {s}
                     </button>
@@ -181,7 +181,7 @@ export function AskCrisp() {
           <div className="px-3 py-3 flex-shrink-0" style={{ borderTop: "1px solid oklch(1 0 0 / 6%)" }}>
             <div
               className="flex items-end gap-2 rounded-xl px-3 py-2"
-              style={{ background: "oklch(0.16 0.03 328)", border: "1px solid oklch(1 0 0 / 8%)" }}
+              style={{ background: "oklch(0.205 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}
             >
               <textarea
                 ref={inputRef}
@@ -223,7 +223,7 @@ function Bubble({ msg, streaming }: { msg: Msg; streaming: boolean }) {
       <div className="flex justify-end">
         <div
           className="max-w-[85%] rounded-2xl rounded-br-sm px-3.5 py-2 text-sm"
-          style={{ background: "oklch(0.62 0.20 32 / 18%)", border: "1px solid oklch(0.62 0.20 32 / 30%)" }}
+          style={{ background: "oklch(0.70 0.15 162 / 18%)", border: "1px solid oklch(0.70 0.15 162 / 30%)" }}
         >
           {msg.content}
         </div>
@@ -294,7 +294,7 @@ function inline(text: string): React.ReactNode {
     }
     if (part.startsWith("`") && part.endsWith("`")) {
       return (
-        <code key={i} className="font-mono text-[12px] px-1 py-0.5 rounded" style={{ background: "oklch(0.20 0.03 328)" }}>
+        <code key={i} className="font-mono text-[12px] px-1 py-0.5 rounded" style={{ background: "oklch(0.235 0.005 286)" }}>
           {part.slice(1, -1)}
         </code>
       );
