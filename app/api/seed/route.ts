@@ -15,48 +15,47 @@ const ASSETS = [
 ];
 
 const VULNS = [
-  { asset: "prod-web-01", cve: "CVE-2021-44228", title: "Apache Log4j2 Remote Code Execution (Log4Shell)", cvss: 10.0, known_exploited: true, epss_score: 0.975 },
-  { asset: "prod-web-01", cve: "CVE-2022-26134", title: "Atlassian Confluence Server OGNL Injection RCE", cvss: 9.8, known_exploited: true, epss_score: 0.974 },
-  { asset: "corp-ad-dc01", cve: "CVE-2021-34527", title: "Windows Print Spooler RCE (PrintNightmare)", cvss: 8.8, known_exploited: true, epss_score: 0.962 },
+  { asset: "prod-web-01", cve: "CVE-2024-4577", title: "PHP-CGI Argument Injection Remote Code Execution", cvss: 9.8, known_exploited: true, epss_score: 0.941 },
+  { asset: "prod-web-01", cve: "CVE-2024-21762", title: "Fortinet FortiOS SSL VPN Out-of-Bounds Write", cvss: 9.8, known_exploited: true, epss_score: 0.913 },
+  { asset: "prod-web-01", cve: "CVE-2021-44228", title: "Apache Log4j2 Remote Code Execution (Log4Shell)", cvss: 10.0, known_exploited: true, epss_score: 0.943 },
+  { asset: "prod-db-primary", cve: "CVE-2023-46747", title: "F5 BIG-IP Configuration Utility Unauthenticated RCE", cvss: 9.8, known_exploited: true, epss_score: 0.949 },
+  { asset: "prod-db-primary", cve: "CVE-2024-6119", title: "OpenSSL X.509 Name Check Type Confusion DoS", cvss: 7.5, known_exploited: false, epss_score: 0.082 },
   { asset: "corp-ad-dc01", cve: "CVE-2020-1472", title: "Netlogon Privilege Escalation (Zerologon)", cvss: 10.0, known_exploited: true, epss_score: 0.971 },
-  { asset: "vpn-gateway-01", cve: "CVE-2024-3400", title: "PAN-OS GlobalProtect OS Command Injection", cvss: 10.0, known_exploited: true, epss_score: 0.969 },
-  { asset: "vpn-gateway-01", cve: "CVE-2023-20198", title: "Cisco IOS XE Web UI Privilege Escalation", cvss: 10.0, known_exploited: true, epss_score: 0.966 },
-  { asset: "mail-server-01", cve: "CVE-2023-23397", title: "Microsoft Outlook Privilege Escalation via NTLM Hash", cvss: 9.8, known_exploited: true, epss_score: 0.944 },
-  { asset: "mail-server-01", cve: "CVE-2022-30190", title: "Microsoft Windows MSDT RCE (Follina)", cvss: 7.8, known_exploited: true, epss_score: 0.936 },
-  { asset: "prod-db-primary", cve: "CVE-2022-1388", title: "F5 BIG-IP iControl REST Authentication Bypass", cvss: 9.8, known_exploited: true, epss_score: 0.973 },
-  { asset: "prod-db-primary", cve: "CVE-2023-44487", title: "HTTP/2 Rapid Reset DDoS Attack", cvss: 7.5, known_exploited: true, epss_score: 0.706 },
-  { asset: "dev-api-gateway", cve: "CVE-2022-22965", title: "Spring Framework RCE via Data Binding (Spring4Shell)", cvss: 9.8, known_exploited: true, epss_score: 0.951 },
-  { asset: "dev-api-gateway", cve: "CVE-2021-26084", title: "Atlassian Confluence Server OGNL Injection", cvss: 9.8, known_exploited: true, epss_score: 0.974 },
-  { asset: "backup-server-01", cve: "CVE-2023-34362", title: "Progress MOVEit Transfer SQL Injection", cvss: 9.8, known_exploited: true, epss_score: 0.962 },
-  { asset: "hr-workstation-12", cve: "CVE-2023-36884", title: "Windows Search Remote Code Execution", cvss: 8.3, known_exploited: true, epss_score: 0.878 },
-  { asset: "prod-web-01", cve: "CVE-2024-21762", title: "Fortinet FortiOS SSL VPN Out-of-Bound Write", cvss: 9.6, known_exploited: true, epss_score: 0.912 },
+  { asset: "corp-ad-dc01", cve: "CVE-2024-43451", title: "Windows NTLM Hash Disclosure Spoofing", cvss: 6.5, known_exploited: true, epss_score: 0.784 },
+  { asset: "vpn-gateway-01", cve: "CVE-2025-0282", title: "Ivanti Connect Secure Stack-Based Buffer Overflow RCE", cvss: 9.0, known_exploited: true, epss_score: 0.922 },
+  { asset: "vpn-gateway-01", cve: "CVE-2024-3400", title: "PAN-OS GlobalProtect OS Command Injection", cvss: 10.0, known_exploited: true, epss_score: 0.962 },
+  { asset: "mail-server-01", cve: "CVE-2024-21410", title: "Microsoft Exchange Server Elevation of Privilege (NTLM Relay)", cvss: 9.8, known_exploited: true, epss_score: 0.873 },
+  { asset: "mail-server-01", cve: "CVE-2024-21413", title: "Microsoft Outlook Remote Code Execution (MonikerLink)", cvss: 9.8, known_exploited: true, epss_score: 0.802 },
+  { asset: "dev-api-gateway", cve: "CVE-2023-22527", title: "Atlassian Confluence Template Injection RCE", cvss: 9.8, known_exploited: true, epss_score: 0.971 },
+  { asset: "dev-api-gateway", cve: "CVE-2024-23897", title: "Jenkins CLI Arbitrary File Read", cvss: 9.8, known_exploited: true, epss_score: 0.783 },
+  { asset: "backup-server-01", cve: "CVE-2024-40711", title: "Veeam Backup & Replication Deserialization RCE", cvss: 9.8, known_exploited: true, epss_score: 0.931 },
+  { asset: "hr-workstation-12", cve: "CVE-2024-7971", title: "Google Chrome V8 Type Confusion", cvss: 8.8, known_exploited: true, epss_score: 0.618 },
 ];
 
 const SOFTWARE: { asset: string; vendor: string; product: string; version: string }[] = [
-  { asset: "prod-web-01", vendor: "Apache", product: "Log4j", version: "2.14.1" },
-  { asset: "prod-web-01", vendor: "Apache", product: "HTTP Server", version: "2.4.51" },
-  { asset: "prod-web-01", vendor: "VMware", product: "Spring Framework", version: "5.3.18" },
-  { asset: "prod-web-01", vendor: "Fortinet", product: "FortiOS", version: "7.2.4" },
-  { asset: "prod-db-primary", vendor: "F5", product: "BIG-IP", version: "16.1.0" },
-  { asset: "prod-db-primary", vendor: "PostgreSQL", product: "PostgreSQL", version: "14.5" },
-  { asset: "prod-db-primary", vendor: "OpenSSL", product: "OpenSSL", version: "3.0.1" },
-  { asset: "corp-ad-dc01", vendor: "Microsoft", product: "Windows Server", version: "2019" },
-  { asset: "corp-ad-dc01", vendor: "Microsoft", product: "Active Directory", version: "2019" },
-  { asset: "corp-ad-dc01", vendor: "Microsoft", product: "Print Spooler", version: "10.0" },
-  { asset: "vpn-gateway-01", vendor: "Palo Alto", product: "PAN-OS", version: "11.0.1" },
-  { asset: "vpn-gateway-01", vendor: "Cisco", product: "IOS XE", version: "17.6.1" },
+  { asset: "prod-web-01", vendor: "Apache", product: "HTTP Server", version: "2.4.58" },
+  { asset: "prod-web-01", vendor: "Apache", product: "Log4j", version: "2.17.0" },
+  { asset: "prod-web-01", vendor: "PHP", product: "PHP", version: "8.2.12" },
+  { asset: "prod-web-01", vendor: "Fortinet", product: "FortiOS", version: "7.4.1" },
+  { asset: "prod-db-primary", vendor: "F5", product: "BIG-IP", version: "17.1.0" },
+  { asset: "prod-db-primary", vendor: "PostgreSQL", product: "PostgreSQL", version: "16.2" },
+  { asset: "prod-db-primary", vendor: "OpenSSL", product: "OpenSSL", version: "3.2.1" },
+  { asset: "corp-ad-dc01", vendor: "Microsoft", product: "Windows Server", version: "2022" },
+  { asset: "corp-ad-dc01", vendor: "Microsoft", product: "Active Directory", version: "2022" },
+  { asset: "vpn-gateway-01", vendor: "Ivanti", product: "Connect Secure", version: "22.6R2" },
+  { asset: "vpn-gateway-01", vendor: "Palo Alto", product: "PAN-OS", version: "11.1.0" },
   { asset: "mail-server-01", vendor: "Microsoft", product: "Exchange Server", version: "2019" },
-  { asset: "mail-server-01", vendor: "Microsoft", product: "Outlook", version: "2019" },
-  { asset: "mail-server-01", vendor: "Microsoft", product: "Windows Server", version: "2019" },
-  { asset: "dev-api-gateway", vendor: "VMware", product: "Spring Boot", version: "2.7.3" },
-  { asset: "dev-api-gateway", vendor: "Atlassian", product: "Confluence", version: "7.13.0" },
-  { asset: "dev-api-gateway", vendor: "F5/nginx", product: "nginx", version: "1.21.6" },
-  { asset: "backup-server-01", vendor: "Progress", product: "MOVEit Transfer", version: "2023.0" },
-  { asset: "backup-server-01", vendor: "Veeam", product: "Backup & Replication", version: "11.0" },
-  { asset: "backup-server-01", vendor: "Microsoft", product: "Windows Server", version: "2016" },
-  { asset: "hr-workstation-12", vendor: "Microsoft", product: "Windows", version: "11" },
+  { asset: "mail-server-01", vendor: "Microsoft", product: "Outlook", version: "2021" },
+  { asset: "mail-server-01", vendor: "Microsoft", product: "Windows Server", version: "2022" },
+  { asset: "dev-api-gateway", vendor: "Atlassian", product: "Confluence", version: "8.5.3" },
+  { asset: "dev-api-gateway", vendor: "Jenkins", product: "Jenkins", version: "2.440" },
+  { asset: "dev-api-gateway", vendor: "nginx", product: "nginx", version: "1.25.3" },
+  { asset: "backup-server-01", vendor: "Veeam", product: "Backup & Replication", version: "12.1" },
+  { asset: "backup-server-01", vendor: "Progress", product: "MOVEit Transfer", version: "2024.0" },
+  { asset: "backup-server-01", vendor: "Microsoft", product: "Windows Server", version: "2022" },
+  { asset: "hr-workstation-12", vendor: "Microsoft", product: "Windows", version: "11 23H2" },
   { asset: "hr-workstation-12", vendor: "Microsoft", product: "Office", version: "2021" },
-  { asset: "hr-workstation-12", vendor: "Google", product: "Chrome", version: "116.0" },
+  { asset: "hr-workstation-12", vendor: "Google", product: "Chrome", version: "127.0" },
 ];
 
 const CONTROLS = [
@@ -121,7 +120,7 @@ export async function POST() {
       const critFactor = 1.0 + (asset.criticality - 1) * 0.15;
       const expFactor = asset.internet_exposed ? 1.3 : 1.0;
       const exploitBonus = v.known_exploited ? 0.5 : 0;
-      const kevBonus = 1.5;
+      const kevBonus = v.known_exploited ? 1.5 : 0;
       const epss = v.epss_score ?? 0;
       const epssBonus = epss >= 0.9 ? 1.5 : epss >= 0.7 ? 1.1 : epss >= 0.4 ? 0.7 : 0;
       const score = Math.round((v.cvss * critFactor * expFactor + exploitBonus + kevBonus + epssBonus) * 100) / 100;
@@ -133,7 +132,7 @@ export async function POST() {
         asset_id: assetId,
         cve: v.cve,
         risk_score: score,
-        evidence: `CVSS=${v.cvss} | KEV=true | EPSS=${v.epss_score}`,
+        evidence: `CVSS=${v.cvss} | KEV=${v.known_exploited} | EPSS=${v.epss_score}`,
       });
     }
 

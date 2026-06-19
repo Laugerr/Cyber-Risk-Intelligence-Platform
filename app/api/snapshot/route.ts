@@ -94,15 +94,18 @@ export async function POST() {
         rows.push({ captured_on: isoDaysAgo(0), ...cur });
         continue;
       }
-      const f = 1 - i / (DAYS - 1); // 0 oldest → ~1 today
-      const noise = 0.95 + Math.random() * 0.1; // ±5%
-      const grow = (target: number, floor: number) => Math.round(target * (floor + (1 - floor) * f) * noise);
+      // Deterministic smooth curve (smoothstep) with a gentle, reproducible
+      // wave — a believable discovery→remediation story, not random jitter.
+      const t = 1 - i / (DAYS - 1);
+      const f = t * t * (3 - 2 * t);
+      const wave = 1 + 0.02 * Math.sin(i * 0.7);
+      const grow = (target: number, floor: number) => Math.round(target * (floor + (1 - floor) * f) * wave);
 
       const vuln_count = grow(cur.vuln_count, 0.45);
       const resolved_count = Math.round(cur.resolved_count * f);
       const in_progress_count = Math.min(grow(Math.max(cur.in_progress_count, 1), 0.3), vuln_count);
       const open_count = Math.max(0, vuln_count - resolved_count - in_progress_count);
-      const total_risk = Math.round(cur.total_risk * (0.45 + 0.55 * f) * noise * 100) / 100;
+      const total_risk = Math.round(cur.total_risk * (0.45 + 0.55 * f) * wave * 100) / 100;
 
       rows.push({
         captured_on: isoDaysAgo(i),
@@ -117,7 +120,7 @@ export async function POST() {
         critical_count: grow(cur.critical_count, 0.4),
         high_count: grow(cur.high_count, 0.4),
         active_alerts: grow(cur.active_alerts, 0.45),
-        mttr_days: Math.round((22 - 10 * f + (Math.random() - 0.5) * 2) * 10) / 10,
+        mttr_days: Math.round((20 - 9 * f + 1.2 * Math.sin(i * 0.45)) * 10) / 10,
       });
     }
 
