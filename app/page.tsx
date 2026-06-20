@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type { Asset, Vulnerability, Alert } from "@/lib/types";
 import { estimateAle } from "@/lib/rosi";
+import { CommandCenter } from "@/components/command-center";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
@@ -182,6 +183,9 @@ export default function DashboardPage() {
             iconBg="bg-green-500/10" iconColor="text-green-400" />
         )}
       </div>
+
+      {/* Command center — pulls SSVC, SLA, compliance & activity onto the home screen */}
+      <CommandCenter refreshKey={assets.length + vulns.length + alerts.length} />
 
       {/* Severity breakdown bars */}
       {!loading && alerts.length > 0 && (
