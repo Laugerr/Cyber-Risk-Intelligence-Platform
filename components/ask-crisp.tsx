@@ -34,6 +34,13 @@ export function AskCrisp() {
     if (open) inputRef.current?.focus();
   }, [open]);
 
+  // Allow other surfaces (e.g. the ⌘K command palette) to open the assistant.
+  useEffect(() => {
+    function onAsk() { setOpen(true); }
+    window.addEventListener("crisp:ask", onAsk);
+    return () => window.removeEventListener("crisp:ask", onAsk);
+  }, []);
+
   const send = useCallback(
     async (text: string) => {
       const trimmed = text.trim();

@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import {
   Shield, LayoutDashboard, Server, Bug, TrendingUp, FileText, Menu,
-  LineChart, ShieldCheck, Timer, Crosshair, Boxes, BellRing, Database, Grid3x3,
+  LineChart, ShieldCheck, Timer, Crosshair, Boxes, BellRing, Database, Grid3x3, Search,
 } from "lucide-react";
 import { NotificationBell } from "@/components/notification-bell";
 
@@ -58,6 +58,16 @@ export function Header({ onMenuClick }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent("crisp:command"))}
+          className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-muted-foreground hover:text-foreground transition-colors"
+          style={{ background: "oklch(0.205 0.004 286)", border: "1px solid oklch(1 0 0 / 8%)" }}
+          aria-label="Open command palette"
+        >
+          <Search className="w-3.5 h-3.5" />
+          <span>Search</span>
+          <kbd className="text-[10px] border border-white/15 rounded px-1 ml-1">⌘K</kbd>
+        </button>
         <NotificationBell />
         <div
           className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg"

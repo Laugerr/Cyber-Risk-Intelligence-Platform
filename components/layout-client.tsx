@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
 import { AskCrisp } from "@/components/ask-crisp";
+import { CommandPalette } from "@/components/command-palette";
 
 export function LayoutClient({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -35,6 +36,7 @@ export function LayoutClient({ children }: { children: React.ReactNode }) {
       </main>
 
       <AskCrisp />
+      <CommandPalette />
     </>
   );
 }
