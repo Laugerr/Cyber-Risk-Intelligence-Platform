@@ -49,6 +49,5 @@ __pycache__/
 
 # Exports
 exports/
-tests/
 
 .claude/

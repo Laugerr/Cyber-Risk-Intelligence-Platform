@@ -91,6 +91,17 @@ cp .env.local.example .env.local
 npm run dev
 ```
 
+---
+
+## 🧪 Testing
+
+Unit tests cover the core risk logic (scoring, ROSI, SSVC, SLA, compliance, CSV, CVE matching) with [Vitest](https://vitest.dev/):
+
+```bash
+npm test          # run the suite once
+npm run test:watch
+```
+
 Open `http://localhost:3000` and click **Load Demo Data** to seed 8 assets + 15 real CVEs.
 
 ---
