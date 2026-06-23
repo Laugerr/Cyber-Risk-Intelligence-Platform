@@ -83,8 +83,11 @@ export default function AssetsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Assets</h1>
-          <p className="text-muted-foreground text-sm mt-1">{assets.length} asset{assets.length !== 1 ? "s" : ""} registered</p>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-1.5 h-6 rounded-full bg-primary" />
+            <h1 className="text-2xl font-bold tracking-tight">Assets</h1>
+          </div>
+          <p className="text-muted-foreground text-sm ml-3.5">{assets.length} asset{assets.length !== 1 ? "s" : ""} registered</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger render={<Button size="sm" className="gap-2" />}>
@@ -131,7 +134,7 @@ export default function AssetsPage() {
 
       {/* Stats row */}
       {assets.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="stagger grid grid-cols-1 sm:grid-cols-3 gap-3">
           <StatCard label="Total Assets" value={assets.length} icon={<Server className="w-4 h-4" />} />
           <StatCard label="Internet Exposed" value={exposed} icon={<ShieldAlert className="w-4 h-4" />} highlight={exposed > 0} />
           <StatCard label="High / Critical" value={critical} icon={<ShieldCheck className="w-4 h-4" />} highlight={critical > 0} />

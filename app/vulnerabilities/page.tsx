@@ -150,8 +150,11 @@ export default function VulnerabilitiesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Vulnerabilities</h1>
-          <p className="text-muted-foreground text-sm mt-1">{vulns.length} vulnerability{vulns.length !== 1 ? "s" : ""} tracked</p>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-1.5 h-6 rounded-full bg-primary" />
+            <h1 className="text-2xl font-bold tracking-tight">Vulnerabilities</h1>
+          </div>
+          <p className="text-muted-foreground text-sm ml-3.5">{vulns.length} vulnerability{vulns.length !== 1 ? "s" : ""} tracked</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger render={<Button size="sm" className="gap-2" />}>
@@ -240,7 +243,7 @@ export default function VulnerabilitiesPage() {
 
       {/* Stats */}
       {vulns.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="stagger grid grid-cols-1 sm:grid-cols-3 gap-3">
           <StatCard label="KEV (Active Exploits)" value={kevCount} icon={<Flame className="w-4 h-4" />} highlight={kevCount > 0} />
           <StatCard label="Critical Severity" value={criticalCount} icon={<ShieldOff className="w-4 h-4" />} highlight={criticalCount > 0} />
           <StatCard label="Avg CVSS Score" value={avgCvss.toFixed(1)} icon={<BarChart2 className="w-4 h-4" />} highlight={avgCvss >= 7} />

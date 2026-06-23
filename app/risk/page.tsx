@@ -104,12 +104,15 @@ export default function RiskPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Risk & ROSI</h1>
-        <p className="text-muted-foreground text-sm mt-1">Risk quantification and security investment modeling</p>
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-1.5 h-6 rounded-full bg-primary" />
+          <h1 className="text-2xl font-bold tracking-tight">Risk &amp; ROSI</h1>
+        </div>
+        <p className="text-muted-foreground text-sm ml-3.5">Risk quantification and security investment modeling</p>
       </div>
 
       {/* Risk KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="stagger grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KpiCard label="Total Risk Score" value={totalRisk.toFixed(2)} color="text-orange-400" />
         <KpiCard label="Est. ALE (€)" value={`€${ale.toLocaleString()}`} color="text-red-400" />
         <KpiCard label="Risk Reduction (€)" value={selectedControl ? `€${riskReductionValue.toLocaleString()}` : "—"} color="text-green-400" />

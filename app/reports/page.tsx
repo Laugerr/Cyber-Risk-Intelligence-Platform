@@ -150,8 +150,11 @@ export default function ReportsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
-          <p className="text-muted-foreground text-sm mt-1">Generate and download executive risk reports</p>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-1.5 h-6 rounded-full bg-primary" />
+            <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
+          </div>
+          <p className="text-muted-foreground text-sm ml-3.5">Generate and download executive risk reports</p>
         </div>
         <div className="flex items-center gap-2">
           <Button onClick={downloadReport} variant="outline" className="gap-2" disabled={alerts.length === 0}>
@@ -191,7 +194,7 @@ export default function ReportsPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* KPIs */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="stagger grid grid-cols-2 lg:grid-cols-4 gap-3">
             <PreviewKpi label="Assets" value={assets.length} />
             <PreviewKpi label="Active Alerts" value={alerts.length} />
             <PreviewKpi label="Total Risk Score" value={totalRisk.toFixed(2)} />
